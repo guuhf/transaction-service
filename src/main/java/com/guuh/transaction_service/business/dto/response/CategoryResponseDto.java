@@ -9,5 +9,5 @@ import lombok.*;
 @Builder
 public class CategoryResponseDto {
     private Long id;
-    private String category;
+    private String name;
 }
