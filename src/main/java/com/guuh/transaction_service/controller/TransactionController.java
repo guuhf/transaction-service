@@ -26,7 +26,7 @@ public class TransactionController {
     @Operation(summary = "Criar uma transação")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Transação criada"),
-            @ApiResponse(responseCode = "409", description = "O valor da transação é inválido"),
+            @ApiResponse(responseCode = "400", description = "O valor da transação é inválido"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
     private ResponseEntity<TransactionResponseDto> createTransaction(@RequestBody TransactionRequestDto dto){
