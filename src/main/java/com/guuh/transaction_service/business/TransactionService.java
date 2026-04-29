@@ -3,8 +3,11 @@ package com.guuh.transaction_service.business;
 import com.guuh.transaction_service.business.dto.request.TransactionRequestDto;
 import com.guuh.transaction_service.business.dto.response.TransactionResponseDto;
 import com.guuh.transaction_service.business.mapper.TransactionMapper;
+import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
+import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
 import com.guuh.transaction_service.infrastructure.exceptions.InvalidAmountException;
+import com.guuh.transaction_service.infrastructure.repository.CategoryRepository;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,17 +19,21 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class TransactionService {
     private final TransactionRepository transactionRepository;
+    private final CategoryRepository categoryRepository;
     private final TransactionMapper mapper;
 
     public TransactionResponseDto createTransaction(TransactionRequestDto dto){
         amountValidation(dto.getAmount());
         Transaction transaction = mapper.toTransaction(dto);
         transaction.setDate(LocalDateTime.now());
+        Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(()->
+                new CategoryNotFoundException("Categoria não encontrada!"));
+        transaction.getCategory().setName(category.getName());
         return mapper.toTransactionDto(transactionRepository.save(transaction));
     }
 
     public void amountValidation(BigDecimal amount){
-        if (amount.compareTo(BigDecimal.ZERO) >= 0){
+        if (amount.compareTo(BigDecimal.ZERO) <= 0){
             throw new InvalidAmountException("O valor tem que ser maior que zero");
         }
     }

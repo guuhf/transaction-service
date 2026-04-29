@@ -14,6 +14,7 @@ public interface TransactionMapper {
     TransactionResponseDto toTransactionDto(Transaction transaction);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "date", ignore = true)
     @Mapping(source = "categoryId", target = "category")
     Transaction toTransaction(TransactionRequestDto dto);
 
