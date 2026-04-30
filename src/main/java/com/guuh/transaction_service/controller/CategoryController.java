@@ -44,7 +44,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Mudar o nome das tarefas")
+    @Operation(summary = "Mudar o nome das categorias")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Categoria atualizada"),
             @ApiResponse(responseCode = "404", description = "Categoria não encontrada!"),
@@ -53,5 +53,17 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> updateCategory(@RequestBody CategoryRequestDto dto,
                                                               @PathVariable Long id){
         return ResponseEntity.status(200).body(categoryService.updateCategory(dto, id));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar categorias")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Categoria deletada"),
+            @ApiResponse(responseCode = "404", description = "Categoria não encontrada"),
+            @ApiResponse(responseCode = "500", description = "Erro inesperado")
+    })
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id){
+        categoryService.deleteCategory(id);
+        return ResponseEntity.status(204).build();
     }
 }
