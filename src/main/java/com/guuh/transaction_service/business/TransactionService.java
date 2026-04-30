@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +37,9 @@ public class TransactionService {
         if (amount.compareTo(BigDecimal.ZERO) <= 0){
             throw new InvalidAmountException("O valor tem que ser maior que zero");
         }
+    }
+
+    public List<TransactionResponseDto> getAllTransactions(){
+
     }
 }
