@@ -9,6 +9,8 @@ import com.guuh.transaction_service.infrastructure.repository.CategoryRepository
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -26,5 +28,9 @@ public class CategoryService {
         if (categoryRepository.existsByName(name)){
             throw new CategoryAlreadyExistsException("Essa categoria ja foi registrada!");
         }
+    }
+
+    public List<CategoryResponseDto> getCategories(){
+        return mapper.toCategoryDtoList(categoryRepository.findAll());
     }
 }
