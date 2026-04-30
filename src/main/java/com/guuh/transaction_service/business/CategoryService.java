@@ -42,4 +42,9 @@ public class CategoryService {
         category.setName(dto.getName());
         return mapper.toCategoryDto(categoryRepository.save(category));
     }
+
+    public void deleteCategory(Long id){
+        categoryRepository.delete(categoryRepository.findById(id).orElseThrow(()->
+                new CategoryNotFoundException("Categoria não encontrada!")));
+    }
 }
