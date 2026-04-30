@@ -5,6 +5,7 @@ import com.guuh.transaction_service.business.dto.response.CategoryResponseDto;
 import com.guuh.transaction_service.business.mapper.CategoryMapper;
 import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryAlreadyExistsException;
+import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
 import com.guuh.transaction_service.infrastructure.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,13 @@ public class CategoryService {
 
     public List<CategoryResponseDto> getCategories(){
         return mapper.toCategoryDtoList(categoryRepository.findAll());
+    }
+
+    public CategoryResponseDto updateCategory(CategoryRequestDto dto, Long id){
+        Category category = categoryRepository.findById(id).orElseThrow(()->
+                new CategoryNotFoundException("Categoria não encontrada!"));
+
+        category.setName(dto.getName());
+        return mapper.toCategoryDto(categoryRepository.save(category));
     }
 }

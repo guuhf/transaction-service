@@ -42,4 +42,16 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponseDto>> getCategories(){
         return ResponseEntity.status(200).body(categoryService.getCategories());
     }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Mudar o nome das tarefas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Categoria atualizada"),
+            @ApiResponse(responseCode = "404", description = "Categoria não encontrada!"),
+            @ApiResponse(responseCode = "500", description = "Erro inesperado")
+    })
+    public ResponseEntity<CategoryResponseDto> updateCategory(@RequestBody CategoryRequestDto dto,
+                                                              @PathVariable Long id){
+        return ResponseEntity.status(200).body(categoryService.updateCategory(dto, id));
+    }
 }
