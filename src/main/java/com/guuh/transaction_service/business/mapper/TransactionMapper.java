@@ -18,6 +18,10 @@ public interface TransactionMapper {
     @Mapping(source = "categoryId", target = "category")
     Transaction toTransaction(TransactionRequestDto dto);
 
+    @Mapping(source = "category.id", target = "categoryId")
+    @Mapping(source = "category.name", target = "categoryName")
+    TransactionResponseDto toTransactionDtoList(Transaction transactionList);
+
     default Category categoryMapper(Long id){
         Category category = new Category();
         category.setId(id);

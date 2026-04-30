@@ -10,10 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/transactions/category")
@@ -32,5 +31,15 @@ public class CategoryController {
     })
     public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody CategoryRequestDto dto){
         return ResponseEntity.status(201).body(categoryService.createCategory(dto));
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar todas as categorias")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tarefas listadas"),
+            @ApiResponse(responseCode = "500", description = "Erro inesperado")
+    })
+    public ResponseEntity<List<CategoryResponseDto>> getCategories(){
+        return ResponseEntity.status(200).body(categoryService.getCategories());
     }
 }
