@@ -6,6 +6,8 @@ import com.guuh.transaction_service.infrastructure.entity.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
     @Mapping(source = "id", target = "id")
@@ -13,5 +15,7 @@ public interface CategoryMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "transactions", ignore = true)
     Category toCategory(CategoryRequestDto dto);
+
+    List<CategoryResponseDto> toCategoryDtoList(List<Category> categoryList);
 
 }
