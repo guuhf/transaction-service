@@ -1,5 +1,6 @@
 package com.guuh.transaction_service.business;
 
+import com.guuh.transaction_service.business.dto.request.FilterRequestDto;
 import com.guuh.transaction_service.business.dto.request.TransactionRequestDto;
 import com.guuh.transaction_service.business.dto.response.TransactionResponseDto;
 import com.guuh.transaction_service.business.mapper.TransactionMapper;
@@ -23,23 +24,31 @@ public class TransactionService {
     private final CategoryRepository categoryRepository;
     private final TransactionMapper mapper;
 
-    public TransactionResponseDto createTransaction(TransactionRequestDto dto){
+    public TransactionResponseDto createTransaction(TransactionRequestDto dto) {
         amountValidation(dto.getAmount());
         Transaction transaction = mapper.toTransaction(dto);
         transaction.setDate(LocalDateTime.now());
-        Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(()->
+        Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(() ->
                 new CategoryNotFoundException("Categoria não encontrada!"));
         transaction.getCategory().setName(category.getName());
         return mapper.toTransactionDto(transactionRepository.save(transaction));
     }
 
-    public void amountValidation(BigDecimal amount){
-        if (amount.compareTo(BigDecimal.ZERO) <= 0){
+    public void amountValidation(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidAmountException("O valor tem que ser maior que zero");
         }
     }
 
-    public List<TransactionResponseDto> getAllTransactions(){
+    public List<TransactionResponseDto> findTransactions(FilterRequestDto dto) {
+        return mapper.toTransactionDtoList(transactionRepository.findWithFilter(
+                dto.getCategoryId(),
+                dto.getTransactionType(),
+                dto.getInitialDate(),
+                dto.getFinalDate(),
+                dto.getInitialDueDate(),
+                dto.getFinalDueDate()
+        ));
 
     }
 }
