@@ -7,6 +7,8 @@ import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
     @Mapping(source = "category.id", target = "categoryId")
@@ -20,7 +22,7 @@ public interface TransactionMapper {
 
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(source = "category.name", target = "categoryName")
-    TransactionResponseDto toTransactionDtoList(Transaction transactionList);
+    List<TransactionResponseDto> toTransactionDtoList(List<Transaction> transactionList);
 
     default Category categoryMapper(Long id){
         Category category = new Category();

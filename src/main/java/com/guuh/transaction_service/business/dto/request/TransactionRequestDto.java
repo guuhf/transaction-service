@@ -1,7 +1,6 @@
 package com.guuh.transaction_service.business.dto.request;
 
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
