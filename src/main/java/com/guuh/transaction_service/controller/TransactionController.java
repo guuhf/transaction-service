@@ -1,6 +1,7 @@
 package com.guuh.transaction_service.controller;
 
 import com.guuh.transaction_service.business.TransactionService;
+import com.guuh.transaction_service.business.dto.request.FilterRequestDto;
 import com.guuh.transaction_service.business.dto.request.TransactionRequestDto;
 import com.guuh.transaction_service.business.dto.response.TransactionResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,11 +9,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/transactions")
@@ -31,6 +33,16 @@ public class TransactionController {
     })
     private ResponseEntity<TransactionResponseDto> createTransaction(@RequestBody TransactionRequestDto dto){
         return ResponseEntity.status(201).body(transactionService.createTransaction(dto));
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar as transações")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Transações listadas"),
+            @ApiResponse(responseCode = "500", description = "Erro inesperado")
+    })
+    private ResponseEntity<List<TransactionResponseDto>> getTransactions(FilterRequestDto dto) {
+        return ResponseEntity.status(200).body(transactionService.findTransactions(dto));
     }
 
 }
