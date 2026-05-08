@@ -29,4 +29,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("finalDueDate")LocalDateTime finalDueDate
     );
 
+    List<Transaction> findTransactionByDateBetween(LocalDateTime initialDate,
+                                                   LocalDateTime finalDate);
+    List<Transaction> findTransactionsByTransactionTypeAndDateBetween(TransactionType transactionType,
+                                                                      LocalDateTime initialDate,
+                                                                      LocalDateTime finalDate);
+
+
 }
