@@ -4,9 +4,12 @@ package com.guuh.transaction_service.controller;
 import com.guuh.transaction_service.business.CategoryService;
 import com.guuh.transaction_service.business.dto.request.CategoryRequestDto;
 import com.guuh.transaction_service.business.dto.response.CategoryResponseDto;
+import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
+import com.guuh.transaction_service.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import java.util.List;
 @RequestMapping("/transactions/category")
 @RequiredArgsConstructor
 @Tag(name = "Category", description = "Category management")
+@SecurityRequirement(name = AuthorizationConfig.SECURITY_SCHEME)
 public class CategoryController {
 
     private final CategoryService categoryService;

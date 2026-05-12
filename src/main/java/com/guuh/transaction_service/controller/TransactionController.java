@@ -4,22 +4,24 @@ import com.guuh.transaction_service.business.TransactionService;
 import com.guuh.transaction_service.business.dto.request.FilterRequestDto;
 import com.guuh.transaction_service.business.dto.request.TransactionRequestDto;
 import com.guuh.transaction_service.business.dto.response.TransactionResponseDto;
+import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
+import com.guuh.transaction_service.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/transactions")
 @RequiredArgsConstructor
 @Tag(name = "Transactions", description = "Transaction management")
+@SecurityRequirement(name = AuthorizationConfig.SECURITY_SCHEME)
 public class TransactionController {
 
     private final TransactionService transactionService;

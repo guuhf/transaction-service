@@ -2,11 +2,16 @@ package com.guuh.transaction_service.controller;
 
 
 import com.guuh.transaction_service.business.AuthService;
+import com.guuh.transaction_service.business.dto.request.LoginRequestDto;
 import com.guuh.transaction_service.business.dto.request.RegisterRequestDto;
+import com.guuh.transaction_service.business.dto.response.LoginResponseDto;
 import com.guuh.transaction_service.business.dto.response.UserResponseDto;
+import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
+import com.guuh.transaction_service.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 @Tag(name = "User", description = "User Management")
+@SecurityRequirement(name = AuthorizationConfig.SECURITY_SCHEME)
 public class AuthController{
 
     private final AuthService authService;
@@ -31,5 +37,16 @@ public class AuthController{
     })
     public ResponseEntity<UserResponseDto> userRegister(RegisterRequestDto dto){
         return ResponseEntity.status(201).body(authService.userRegister(dto));
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "Login de usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário logado"),
+            @ApiResponse(responseCode = "401", description = "Credenciais Inválidas"),
+            @ApiResponse(responseCode = "500", description = "Erro inesperado")
+    })
+    public ResponseEntity<LoginResponseDto> userLogin(LoginRequestDto dto){
+        return ResponseEntity.status(200).body(authService.userLogin(dto));
     }
 }
