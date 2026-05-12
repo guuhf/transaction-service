@@ -7,8 +7,6 @@ import com.guuh.transaction_service.infrastructure.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.lang.annotation.Target;
-
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     @Mapping(target = "id", ignore = true)

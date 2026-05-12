@@ -2,9 +2,12 @@ package com.guuh.transaction_service.controller;
 
 import com.guuh.transaction_service.business.ReportService;
 import com.guuh.transaction_service.business.dto.response.ReportResponseDto;
+import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
+import com.guuh.transaction_service.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/transactions/report")
 @RequiredArgsConstructor
 @Tag(name = "Reports", description = "Report Management")
+@SecurityRequirement(name = AuthorizationConfig.SECURITY_SCHEME)
 public class ReportController {
 
     private final ReportService reportService;

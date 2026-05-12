@@ -4,8 +4,10 @@ import com.guuh.transaction_service.infrastructure.exceptions.CategoryAlreadyExi
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
 import com.guuh.transaction_service.infrastructure.exceptions.InvalidAmountException;
 import com.guuh.transaction_service.infrastructure.exceptions.UserAlreadyExistsException;
+import org.springframework.expression.AccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -34,6 +36,18 @@ public class RestExceptionHandler {
     private ResponseEntity<RestErrorMessage> userAlreadyExistsHandler(UserAlreadyExistsException e) {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    private ResponseEntity<RestErrorMessage> badCredentialsHandler(BadCredentialsException e) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.UNAUTHORIZED, "Email ou senha inválidos");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(threatResponse);
+    }
+
+    @ExceptionHandler(AccessException.class)
+    private ResponseEntity<RestErrorMessage> accessDeniedHandler(BadCredentialsException e) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.FORBIDDEN, "Acesso negado");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(threatResponse);
     }
 
 }
