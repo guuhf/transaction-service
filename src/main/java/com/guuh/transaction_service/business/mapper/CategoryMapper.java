@@ -14,6 +14,7 @@ public interface CategoryMapper {
     CategoryResponseDto toCategoryDto(Category category);
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "transactions", ignore = true)
+    @Mapping(target = "user", ignore = true)
     Category toCategory(CategoryRequestDto dto);
 
     List<CategoryResponseDto> toCategoryDtoList(List<Category> categoryList);

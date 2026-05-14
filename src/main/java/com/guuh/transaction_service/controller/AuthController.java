@@ -13,9 +13,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +37,7 @@ public class AuthController{
             @ApiResponse(responseCode = "409", description = "Email ja existente"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<UserResponseDto> userRegister(RegisterRequestDto dto){
+    public ResponseEntity<UserResponseDto> userRegister(@RequestBody @Valid RegisterRequestDto dto){
         return ResponseEntity.status(201).body(authService.userRegister(dto));
     }
 
@@ -46,7 +48,7 @@ public class AuthController{
             @ApiResponse(responseCode = "401", description = "Credenciais Inválidas"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<LoginResponseDto> userLogin(LoginRequestDto dto){
+    public ResponseEntity<LoginResponseDto> userLogin(@RequestBody @Valid LoginRequestDto dto){
         return ResponseEntity.status(200).body(authService.userLogin(dto));
     }
 }
