@@ -12,28 +12,27 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     @Query("""
-    SELECT t FROM Transaction t
-    WHERE (:categoryId IS NULL OR t.category.id = :categoryId)
-    AND (:transactionType IS NULL OR t.transactionType = :transactionType)
-    AND (CAST(:initialDate AS timestamp) IS NULL OR t.date >= :initialDate)
-    AND (CAST(:finalDate AS timestamp) IS NULL OR t.date <= :finalDate)
-    AND (CAST(:initialDueDate AS timestamp) IS NULL OR t.dueDate >= :initialDueDate)
-    AND (CAST(:finalDueDate AS timestamp) IS NULL OR t.dueDate <= :finalDueDate)
-""")
+                SELECT t FROM Transaction t
+                WHERE t.user.id = :userId
+                AND (:categoryId IS NULL OR t.category.id = :categoryId)
+                AND (:transactionType IS NULL OR t.transactionType = :transactionType)
+                AND (CAST(:initialDate AS LocalDateTime) IS NULL OR t.date >= :initialDate)
+                AND (CAST(:finalDate AS LocalDateTime) IS NULL OR t.date <= :finalDate)
+                AND (CAST(:initialDueDate AS LocalDateTime) IS NULL OR t.dueDate >= :initialDueDate)
+                AND (CAST(:finalDueDate AS LocalDateTime) IS NULL OR t.dueDate <= :finalDueDate)
+            """)
     List<Transaction> findWithFilter(
-            @Param("categoryId")Long categoryId,
-            @Param("transactionType")TransactionType transactionType,
-            @Param("initialDate")LocalDateTime initialDate,
-            @Param("finalDate")LocalDateTime finalDate,
-            @Param("initialDueDate")LocalDateTime initialDueDate,
-            @Param("finalDueDate")LocalDateTime finalDueDate
+            @Param("userId") Long userId,
+            @Param("categoryId") Long categoryId,
+            @Param("transactionType") TransactionType transactionType,
+            @Param("initialDate") LocalDateTime initialDate,
+            @Param("finalDate") LocalDateTime finalDate,
+            @Param("initialDueDate") LocalDateTime initialDueDate,
+            @Param("finalDueDate") LocalDateTime finalDueDate
     );
 
-    List<Transaction> findTransactionByDateBetween(LocalDateTime initialDate,
-                                                   LocalDateTime finalDate);
-    List<Transaction> findTransactionsByTransactionTypeAndDateBetween(TransactionType transactionType,
-                                                                      LocalDateTime initialDate,
-                                                                      LocalDateTime finalDate);
-
+    List<Transaction> findByUserIdAndDateBetween(Long userId,
+                                                 LocalDateTime initialDate,
+                                                 LocalDateTime finalDate);
 
 }

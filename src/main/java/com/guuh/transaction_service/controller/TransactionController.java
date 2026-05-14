@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "400", description = "O valor da transação é inválido"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    private ResponseEntity<TransactionResponseDto> createTransaction(@RequestBody TransactionRequestDto dto){
+    private ResponseEntity<TransactionResponseDto> createTransaction(@RequestBody @Valid TransactionRequestDto dto){
         return ResponseEntity.status(201).body(transactionService.createTransaction(dto));
     }
 
