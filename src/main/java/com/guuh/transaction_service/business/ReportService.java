@@ -2,7 +2,6 @@ package com.guuh.transaction_service.business;
 
 import com.guuh.transaction_service.business.dto.response.CategoryReportResponseDto;
 import com.guuh.transaction_service.business.dto.response.ReportResponseDto;
-import com.guuh.transaction_service.business.mapper.TransactionMapper;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
@@ -20,18 +19,23 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ReportService {
     private final TransactionRepository transactionRepository;
-    private final TransactionMapper mapper;
+    private final AuthService authService;
 
     public ReportResponseDto generateReport(LocalDateTime initialDate,
                                             LocalDateTime finalDate) {
-        List<Transaction> transactions = transactionRepository.findTransactionByDateBetween(initialDate, finalDate);
+        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(
+                authService.getLoggedUser().getId(), initialDate,
+                finalDate
+        );
 
         BigDecimal totalIncome = calculateTransactionTypeTotal(transactions, TransactionType.INCOME);
         BigDecimal totalExpense = calculateTransactionTypeTotal(transactions, TransactionType.EXPENSE);
+        BigDecimal openingBalance = calculateTransactionTypeTotal(transactions, TransactionType.OPENINGBALANCE);
         return ReportResponseDto.builder()
                 .totalIncome(totalIncome)
                 .totalExpense(totalExpense)
-                .balance(totalIncome.subtract(totalExpense))
+                .openingBalance(openingBalance)
+                .balance(totalIncome.add(openingBalance).subtract(totalExpense))
                 .totalTransactions(transactions.size())
                 .initialDate(initialDate)
                 .finalDate(finalDate)
@@ -55,6 +59,11 @@ public class ReportService {
         Map<String, BigDecimal> categoryReport = new HashMap<>();
 
         for (Transaction transaction : transactions) {
+
+            if (transaction.getTransactionType() == TransactionType.OPENINGBALANCE){
+                continue;
+            }
+
             String categoryName =
                     transaction.getCategory().getName();
 
@@ -70,11 +79,11 @@ public class ReportService {
         return generateCategoryReport(categoryReport);
     }
 
-    public List<CategoryReportResponseDto> generateCategoryReport(Map<String, BigDecimal> categoryReport){
+    public List<CategoryReportResponseDto> generateCategoryReport(Map<String, BigDecimal> categoryReport) {
 
         List<CategoryReportResponseDto> categories = new ArrayList<>();
 
-        for (Map.Entry<String, BigDecimal> entry : categoryReport.entrySet()){
+        for (Map.Entry<String, BigDecimal> entry : categoryReport.entrySet()) {
             categories.add(
                     new CategoryReportResponseDto(
                             entry.getKey(),
@@ -83,6 +92,6 @@ public class ReportService {
             );
         }
 
-    return categories;
+        return categories;
     }
 }
