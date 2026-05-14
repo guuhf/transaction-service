@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "409", description = "Categoria ja existente!"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody CategoryRequestDto dto){
+    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody @Valid CategoryRequestDto dto){
         return ResponseEntity.status(201).body(categoryService.createCategory(dto));
     }
 
@@ -54,7 +55,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Categoria não encontrada!"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<CategoryResponseDto> updateCategory(@RequestBody CategoryRequestDto dto,
+    public ResponseEntity<CategoryResponseDto> updateCategory(@RequestBody @Valid CategoryRequestDto dto,
                                                               @PathVariable Long id){
         return ResponseEntity.status(200).body(categoryService.updateCategory(dto, id));
     }

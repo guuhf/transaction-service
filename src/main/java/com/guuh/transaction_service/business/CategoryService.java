@@ -18,25 +18,28 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper mapper;
+    private final AuthService authService;
 
     public CategoryResponseDto createCategory(CategoryRequestDto dto){
         validateCategoryUniquess(dto.getName());
         Category category = mapper.toCategory(dto);
+        category.setUser(authService.getLoggedUser());
         return mapper.toCategoryDto(categoryRepository.save(category));
     }
 
     public void validateCategoryUniquess(String name){
-        if (categoryRepository.existsByName(name)){
+        if (categoryRepository.existsByNameAndUserId(name, authService.getLoggedUser().getId())){
             throw new CategoryAlreadyExistsException("Essa categoria ja foi registrada!");
         }
     }
 
     public List<CategoryResponseDto> getCategories(){
-        return mapper.toCategoryDtoList(categoryRepository.findAll());
+        return mapper.toCategoryDtoList(categoryRepository.findByUserId(authService.getLoggedUser().getId()));
     }
 
     public CategoryResponseDto updateCategory(CategoryRequestDto dto, Long id){
-        Category category = categoryRepository.findById(id).orElseThrow(()->
+        Category category = categoryRepository.findByIdAndUserId(
+                id, authService.getLoggedUser().getId()).orElseThrow(()->
                 new CategoryNotFoundException("Categoria não encontrada!"));
 
         category.setName(dto.getName());
@@ -44,7 +47,8 @@ public class CategoryService {
     }
 
     public void deleteCategory(Long id){
-        categoryRepository.delete(categoryRepository.findById(id).orElseThrow(()->
+        categoryRepository.delete(categoryRepository.findByIdAndUserId(
+                id, authService.getLoggedUser().getId()).orElseThrow(()->
                 new CategoryNotFoundException("Categoria não encontrada!")));
     }
 }

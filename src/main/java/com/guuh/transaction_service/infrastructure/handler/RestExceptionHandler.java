@@ -1,12 +1,9 @@
 package com.guuh.transaction_service.infrastructure.handler;
 
-import com.guuh.transaction_service.infrastructure.exceptions.CategoryAlreadyExistsException;
-import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
-import com.guuh.transaction_service.infrastructure.exceptions.InvalidAmountException;
-import com.guuh.transaction_service.infrastructure.exceptions.UserAlreadyExistsException;
-import org.springframework.expression.AccessException;
+import com.guuh.transaction_service.infrastructure.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,10 +41,16 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(threatResponse);
     }
 
-    @ExceptionHandler(AccessException.class)
-    private ResponseEntity<RestErrorMessage> accessDeniedHandler(BadCredentialsException e) {
+    @ExceptionHandler(AccessDeniedException.class)
+    private ResponseEntity<RestErrorMessage> accessDeniedHandler(AccessDeniedException e) {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.FORBIDDEN, "Acesso negado");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(threatResponse);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    private ResponseEntity<RestErrorMessage> userNotFoundHandler(UserNotFoundException e){
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
     }
 
 }

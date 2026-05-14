@@ -14,6 +14,7 @@ import java.util.List;
 public class ReportResponseDto {
     private BigDecimal totalIncome;
     private BigDecimal totalExpense;
+    private BigDecimal openingBalance;
     private BigDecimal balance;
     private Integer totalTransactions;
 

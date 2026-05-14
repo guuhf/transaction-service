@@ -21,4 +21,9 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private List<Transaction> transactions;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
 }

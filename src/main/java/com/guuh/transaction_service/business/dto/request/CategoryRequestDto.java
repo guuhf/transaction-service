@@ -1,5 +1,6 @@
 package com.guuh.transaction_service.business.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.List;
@@ -10,5 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CategoryRequestDto {
+    @NotBlank
     private String name;
 }
