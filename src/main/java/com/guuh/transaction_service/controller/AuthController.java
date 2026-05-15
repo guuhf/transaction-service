@@ -7,7 +7,6 @@ import com.guuh.transaction_service.business.dto.request.RegisterRequestDto;
 import com.guuh.transaction_service.business.dto.response.LoginResponseDto;
 import com.guuh.transaction_service.business.dto.response.UserResponseDto;
 import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
-import com.guuh.transaction_service.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
