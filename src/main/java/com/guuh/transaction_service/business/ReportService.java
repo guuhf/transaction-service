@@ -3,6 +3,7 @@ package com.guuh.transaction_service.business;
 import com.guuh.transaction_service.business.dto.response.CategoryReportResponseDto;
 import com.guuh.transaction_service.business.dto.response.ReportResponseDto;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
+import com.guuh.transaction_service.infrastructure.entity.User;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ReportService {
     private final TransactionRepository transactionRepository;
-    private final AuthService authService;
+    private final UserService userService;
 
     public ReportResponseDto generateReport(LocalDateTime initialDate,
                                             LocalDateTime finalDate) {
         List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(
-                authService.getLoggedUser().getId(), initialDate,
+                userService.getLoggedUser().getId(), initialDate,
                 finalDate
         );
 
