@@ -3,6 +3,7 @@ package com.guuh.transaction_service.business;
 import com.guuh.transaction_service.business.dto.request.CategoryRequestDto;
 import com.guuh.transaction_service.business.dto.response.CategoryResponseDto;
 import com.guuh.transaction_service.business.mapper.CategoryMapper;
+import com.guuh.transaction_service.business.mapper.UserMapper;
 import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryAlreadyExistsException;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
@@ -18,28 +19,29 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper mapper;
-    private final AuthService authService;
+    private final UserService userService;
+    private final UserMapper userMapper;
 
     public CategoryResponseDto createCategory(CategoryRequestDto dto){
         validateCategoryUniquess(dto.getName());
         Category category = mapper.toCategory(dto);
-        category.setUser(authService.getLoggedUser());
+        category.setUser(userService.getLoggedUser());
         return mapper.toCategoryDto(categoryRepository.save(category));
     }
 
     public void validateCategoryUniquess(String name){
-        if (categoryRepository.existsByNameAndUserId(name, authService.getLoggedUser().getId())){
+        if (categoryRepository.existsByNameAndUserId(name, userService.getLoggedUser().getId())){
             throw new CategoryAlreadyExistsException("Essa categoria ja foi registrada!");
         }
     }
 
     public List<CategoryResponseDto> getCategories(){
-        return mapper.toCategoryDtoList(categoryRepository.findByUserId(authService.getLoggedUser().getId()));
+        return mapper.toCategoryDtoList(categoryRepository.findByUserId(userService.getLoggedUser().getId()));
     }
 
     public CategoryResponseDto updateCategory(CategoryRequestDto dto, Long id){
         Category category = categoryRepository.findByIdAndUserId(
-                id, authService.getLoggedUser().getId()).orElseThrow(()->
+                id, userService.getLoggedUser().getId()).orElseThrow(()->
                 new CategoryNotFoundException("Categoria não encontrada!"));
 
         category.setName(dto.getName());
@@ -48,7 +50,7 @@ public class CategoryService {
 
     public void deleteCategory(Long id){
         categoryRepository.delete(categoryRepository.findByIdAndUserId(
-                id, authService.getLoggedUser().getId()).orElseThrow(()->
+                id, userService.getLoggedUser().getId()).orElseThrow(()->
                 new CategoryNotFoundException("Categoria não encontrada!")));
     }
 }
