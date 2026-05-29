@@ -7,6 +7,7 @@ import com.guuh.transaction_service.business.dto.request.RegisterRequestDto;
 import com.guuh.transaction_service.business.dto.response.LoginResponseDto;
 import com.guuh.transaction_service.business.dto.response.UserResponseDto;
 import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
