@@ -35,7 +35,7 @@ public class AuthService {
 
     public void validateEmailUniquess(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new UserAlreadyExistsException("O usuário ja existe");
+            throw new UserAlreadyExistsException("Email ou senha inválidos!");
         }
     }
 
