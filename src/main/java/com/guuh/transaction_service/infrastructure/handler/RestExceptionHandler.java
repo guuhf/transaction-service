@@ -1,6 +1,7 @@
 package com.guuh.transaction_service.infrastructure.handler;
 
 import com.guuh.transaction_service.infrastructure.exceptions.*;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
