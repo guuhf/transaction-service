@@ -44,8 +44,9 @@ public class TransactionController {
             @ApiResponse(responseCode = "200", description = "Transações listadas"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    private ResponseEntity<List<TransactionResponseDto>> getTransactions(FilterRequestDto dto) {
-        return ResponseEntity.status(200).body(transactionService.findTransactions(dto));
+    private ResponseEntity<List<TransactionResponseDto>> getTransactions(FilterRequestDto dto,
+                                                                         @RequestParam("page") int page) {
+        return ResponseEntity.status(200).body(transactionService.findTransactions(dto, page));
     }
 
 }
