@@ -11,6 +11,7 @@ import com.guuh.transaction_service.infrastructure.exceptions.InvalidAmountExcep
 import com.guuh.transaction_service.infrastructure.repository.CategoryRepository;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -42,7 +43,7 @@ public class TransactionService {
         }
     }
 
-    public List<TransactionResponseDto> findTransactions(FilterRequestDto dto) {
+    public List<TransactionResponseDto> findTransactions(FilterRequestDto dto, int page) {
         return mapper.toTransactionDtoList(transactionRepository.findWithFilter(
                 userService.getLoggedUser().getId(),
                 dto.getCategoryId(),
@@ -50,7 +51,8 @@ public class TransactionService {
                 dto.getInitialDate(),
                 dto.getFinalDate(),
                 dto.getInitialDueDate(),
-                dto.getFinalDueDate()
+                dto.getFinalDueDate(),
+                PageRequest.of(page, 15)
         ));
 
     }
