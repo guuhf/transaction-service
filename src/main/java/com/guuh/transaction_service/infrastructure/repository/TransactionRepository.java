@@ -2,6 +2,7 @@ package com.guuh.transaction_service.infrastructure.repository;
 
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,7 +29,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("initialDate") LocalDateTime initialDate,
             @Param("finalDate") LocalDateTime finalDate,
             @Param("initialDueDate") LocalDateTime initialDueDate,
-            @Param("finalDueDate") LocalDateTime finalDueDate
+            @Param("finalDueDate") LocalDateTime finalDueDate,
+            Pageable pageable
     );
 
     List<Transaction> findByUserIdAndDateBetween(Long userId,
