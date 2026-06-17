@@ -30,7 +30,7 @@ public class JwtUtil {
         );
     }
 
-    // Gera um token JWT com o nome de usuário e validade de 1 hora
+    // Gera um token JWT com o nome de usuário e validade de 15 minutos
     public String generateToken(String username) {
         return Jwts.builder()
                 .subject(username) // Define o nome de usuário como o assunto do token
