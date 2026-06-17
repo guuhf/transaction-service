@@ -36,8 +36,10 @@ dependencies {
 	implementation("org.mapstruct:mapstruct:1.6.3")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 	annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
-	implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
+	implementation 'com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter:0.14.0'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation("org.springframework.boot:spring-boot-starter-aop:4.0.0-M2")
+	implementation("com.hazelcast:hazelcast:5.5.0")
 }
 
 tasks.named('test') {
