@@ -12,9 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/user")
 @Tag(name = "users", description = "User management")
 @SecurityRequirement(name = AuthorizationConfig.SECURITY_SCHEME)
 public class UserController {

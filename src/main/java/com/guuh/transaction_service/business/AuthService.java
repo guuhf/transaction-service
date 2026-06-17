@@ -12,7 +12,9 @@ import com.guuh.transaction_service.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +48,17 @@ public class AuthService {
         return LoginResponseDto.builder()
                 .token("Bearer " + jwtUtil.generateToken(authentication.getName()))
                 .build();
+    }
+
+    public boolean isSigned(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken);
+    }
+
+    public boolean isNotSigned(){
+        return !isSigned();
     }
 }
