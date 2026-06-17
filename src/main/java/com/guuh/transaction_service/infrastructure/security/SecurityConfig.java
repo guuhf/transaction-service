@@ -49,8 +49,8 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // Auth
-                        .requestMatchers("/user/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/auth").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
 
                         // Rotas protegidas

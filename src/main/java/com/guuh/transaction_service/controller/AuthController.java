@@ -7,7 +7,6 @@ import com.guuh.transaction_service.business.dto.request.RegisterRequestDto;
 import com.guuh.transaction_service.business.dto.response.LoginResponseDto;
 import com.guuh.transaction_service.business.dto.response.UserResponseDto;
 import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
-import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
-@Tag(name = "User", description = "User Management")
+@Tag(name = "Auth", description = "Auth Management")
 @SecurityRequirement(name = AuthorizationConfig.SECURITY_SCHEME)
 public class AuthController{
 

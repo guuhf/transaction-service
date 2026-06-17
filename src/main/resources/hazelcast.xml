@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hazelcast xmlns="http://www.hazelcast.com/schema/config"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.hazelcast.com/schema/config
+           http://www.hazelcast.com/schema/config/hazelcast-config-5.5.xsd">
+    <network>
+        <join>
+            <multicast enabled="false"/>
+            <tcp-ip enabled="false"/>
+        </join>
+    </network>
+
+    <cache name="rateLimitLoggedMessage">
+        <key-type class-name="java.lang.String"/>
+        <value-type class-name="io.github.bucket4j.grid.hazelcast.SimpleBackupProcessor"/>
+        <statistics-enabled>true</statistics-enabled>
+    </cache>
+
+    <cache name="rateLimitAnonymousMessage">
+        <key-type class-name="java.lang.String"/>
+        <value-type class-name="io.github.bucket4j.grid.hazelcast.SimpleBackupProcessor"/>
+        <statistics-enabled>true</statistics-enabled>
+    </cache>
+
+</hazelcast>

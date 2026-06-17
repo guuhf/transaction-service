@@ -1,17 +1,43 @@
 spring:
   application:
     name: transaction-service
-
   datasource:
     url: jdbc:postgresql://localhost:5432/db_transactions
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-
   jpa:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+  cache:
+    type: jcache
+    jcache:
+      provider: com.hazelcast.cache.impl.HazelcastServerCachingProvider
+      config: classpath:hazelcast.xml
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: rateLimitLoggedMessage
+      url: ^(/auth|/transactions/report).*
+      filter-order: 100
+      rate-limits:
+        - execute-condition: "@authService.isSigned()"
+          expression: "@userService.getLoggedUser()"
+          bandwidths:
+            - capacity: 10
+              time: 1
+              unit: minutes
+    - cache-name: rateLimitAnonymousMessage
+      url: ^(/auth|/transactions/report).*
+      filter-order: 101
+      rate-limits:
+        - execute-condition: "@authService.isNotSigned()"
+          expression: "getRemoteAddr()"
+          bandwidths:
+            - capacity: 5
+              time: 1
+              unit: minutes
 
 server:
   port: 8081
