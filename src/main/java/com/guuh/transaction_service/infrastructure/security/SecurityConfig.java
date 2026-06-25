@@ -49,7 +49,9 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // Auth
+                        .requestMatchers("/auth/").permitAll()
                         .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/refresh-token").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
 
