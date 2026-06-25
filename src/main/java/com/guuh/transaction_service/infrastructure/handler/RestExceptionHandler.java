@@ -1,6 +1,7 @@
 package com.guuh.transaction_service.infrastructure.handler;
 
 import com.guuh.transaction_service.infrastructure.exceptions.*;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -48,9 +49,23 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    private ResponseEntity<RestErrorMessage> userNotFoundHandler(UserNotFoundException e){
+    private ResponseEntity<RestErrorMessage> userNotFoundHandler(UserNotFoundException e) {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
     }
+
+    @ExceptionHandler(UnauthorizedTokenException.class)
+    private ResponseEntity<RestErrorMessage> unauthorizedTokenHandler(UnauthorizedTokenException e) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.UNAUTHORIZED, e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(threatResponse);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    private ResponseEntity<RestErrorMessage> jwtHandler(JwtException e) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.UNAUTHORIZED, "Token inválido");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(threatResponse);
+    }
+
+
 
 }

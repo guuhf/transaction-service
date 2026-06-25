@@ -3,6 +3,7 @@ package com.guuh.transaction_service.controller;
 
 import com.guuh.transaction_service.business.AuthService;
 import com.guuh.transaction_service.business.dto.request.LoginRequestDto;
+import com.guuh.transaction_service.business.dto.request.RefreshTokenRequestDto;
 import com.guuh.transaction_service.business.dto.request.RegisterRequestDto;
 import com.guuh.transaction_service.business.dto.response.LoginResponseDto;
 import com.guuh.transaction_service.business.dto.response.UserResponseDto;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Auth", description = "Auth Management")
 @SecurityRequirement(name = AuthorizationConfig.SECURITY_SCHEME)
-public class AuthController{
+public class AuthController {
 
     private final AuthService authService;
 
@@ -36,7 +37,7 @@ public class AuthController{
             @ApiResponse(responseCode = "409", description = "Email ja existente"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<UserResponseDto> userRegister(@RequestBody @Valid RegisterRequestDto dto){
+    public ResponseEntity<UserResponseDto> userRegister(@RequestBody @Valid RegisterRequestDto dto) {
         return ResponseEntity.status(201).body(authService.userRegister(dto));
     }
 
@@ -47,7 +48,18 @@ public class AuthController{
             @ApiResponse(responseCode = "401", description = "Credenciais Inválidas"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<LoginResponseDto> userLogin(@RequestBody @Valid LoginRequestDto dto){
+    public ResponseEntity<LoginResponseDto> userLogin(@RequestBody @Valid LoginRequestDto dto) {
         return ResponseEntity.status(200).body(authService.userLogin(dto));
+    }
+
+    @PostMapping("/refresh-token")
+    @Operation(summary = "Refresh token login")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token válido"),
+            @ApiResponse(responseCode = "401", description = "Token inválido"),
+            @ApiResponse(responseCode = "500", description = "Erro inesperado")
+    })
+    public ResponseEntity<LoginResponseDto> refreshTokenLogin(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
+        return ResponseEntity.status(200).body(authService.refreshTokenLogin(refreshTokenRequestDto));
     }
 }
