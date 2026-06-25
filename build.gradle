@@ -40,6 +40,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation("org.springframework.boot:spring-boot-starter-aop:4.0.0-M2")
 	implementation("com.hazelcast:hazelcast:5.5.0")
+	implementation("org.springframework.security:spring-security-crypto:7.1.0")
 }
 
 tasks.named('test') {

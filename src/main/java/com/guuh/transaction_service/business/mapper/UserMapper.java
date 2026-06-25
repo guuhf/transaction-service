@@ -12,6 +12,7 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "transactions", ignore = true)
     @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "refreshToken", ignore = true)
     User toUser (RegisterRequestDto dto);
 
     UserResponseDto toUserDto(User user);
