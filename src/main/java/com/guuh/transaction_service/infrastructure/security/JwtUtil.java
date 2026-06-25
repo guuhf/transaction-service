@@ -1,6 +1,7 @@
 package com.guuh.transaction_service.infrastructure.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class JwtUtil {
@@ -34,12 +36,33 @@ public class JwtUtil {
     public String generateToken(String username) {
         return Jwts.builder()
                 .subject(username) // Define o nome de usuário como o assunto do token
+                .claim("token_type", "access")
                 .issuer(issuer)
                 .audience().add(audience).and()
                 .issuedAt(new Date()) // Define a data e hora de emissão do token
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // Define a data e hora de expiração (15 minutos a partir da emissão)
                 .signWith(getSigningKey()) // Converte a chave secreta em bytes e assina o token com ela
                 .compact(); // Constrói o token JWT
+    }
+
+    public String generateRefreshToken(String username) {
+        return Jwts.builder()
+                .subject(username) // Define o nome de usuário como o assunto do token
+                .claim("token_type", "refresh")
+                .issuer(issuer)
+                .audience().add(audience).and()
+                .issuedAt(new Date()) // Define a data e hora de emissão do token
+                .expiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(15))) // Define a data e hora de expiração (15 dias a partir da emissão)
+                .signWith(getSigningKey()) // Converte a chave secreta em bytes e assina o token com ela
+                .compact(); // Constrói o token JWT
+    }
+
+    public boolean isAccessToken(String token){
+        return "access".equals(extractClaims(token).get("token_type", String.class));
+    }
+
+    public boolean isRefreshToken(String token){
+        return "refresh".equals(extractClaims(token).get("token_type", String.class));
     }
 
     // Extrai as claims do token JWT (informações adicionais do token)
@@ -51,7 +74,9 @@ public class JwtUtil {
                 .build()
                 .parseSignedClaims(token) // Analisa o token JWT e obtém as claims
                 .getPayload(); // Retorna o corpo das claims
+
     }
+
 
     // Extrai o nome de usuário do token JWT
     public String extractUsername(String token) {

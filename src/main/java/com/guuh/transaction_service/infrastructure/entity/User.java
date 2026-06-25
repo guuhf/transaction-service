@@ -32,6 +32,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List <Category> categories;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RefreshToken refreshToken;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
