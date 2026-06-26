@@ -6,6 +6,9 @@ import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -25,11 +28,21 @@ public interface TransactionMapper {
     @Mapping(source = "category.name", target = "categoryName")
     List<TransactionResponseDto> toTransactionDtoList(List<Transaction> transactionList);
 
-    default Category categoryMapper(Long id){
+
+    default Category categoryMapper(Long id) {
         Category category = new Category();
         category.setId(id);
         return category;
     }
 
+    default Page<TransactionResponseDto> toResponseDtoPage(Page<Transaction> transactionPage) {
+        List<TransactionResponseDto> dtos = toTransactionDtoList(transactionPage.getContent());
 
+        return new PageImpl<>(
+                dtos,
+                transactionPage.getPageable(),
+                transactionPage.getTotalElements()
+        );
+    }
 }
+
