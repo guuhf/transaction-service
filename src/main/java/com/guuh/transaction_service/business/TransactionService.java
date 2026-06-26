@@ -45,7 +45,7 @@ public class TransactionService {
     }
 
     public Page<TransactionResponseDto> findTransactions(FilterRequestDto dto, int page) {
-        return mapper.toTransactionDtoPageList(transactionRepository.findWithFilter(
+       return mapper.toResponseDtoPage(transactionRepository.findWithFilter(
                 userService.getLoggedUser().getId(),
                 dto.getCategoryId(),
                 dto.getTransactionType(),
