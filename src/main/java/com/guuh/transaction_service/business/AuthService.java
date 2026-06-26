@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -69,7 +70,7 @@ public class AuthService {
 
     public void validateEmailUniquess(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new UserAlreadyExistsException("Email ou senha inválidos!");
+            throw new BadCredentialsException("Email ou senha inválidos!");
         }
     }
 
