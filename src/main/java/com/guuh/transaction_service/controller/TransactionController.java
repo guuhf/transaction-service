@@ -5,7 +5,6 @@ import com.guuh.transaction_service.business.dto.request.FilterRequestDto;
 import com.guuh.transaction_service.business.dto.request.TransactionRequestDto;
 import com.guuh.transaction_service.business.dto.response.TransactionResponseDto;
 import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
-import com.guuh.transaction_service.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -13,10 +12,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/transactions")
@@ -44,7 +42,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "200", description = "Transações listadas"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    private ResponseEntity<List<TransactionResponseDto>> getTransactions(FilterRequestDto dto,
+    private ResponseEntity<Page<TransactionResponseDto>> getTransactions(FilterRequestDto dto,
                                                                          @RequestParam("page") int page) {
         return ResponseEntity.status(200).body(transactionService.findTransactions(dto, page));
     }
