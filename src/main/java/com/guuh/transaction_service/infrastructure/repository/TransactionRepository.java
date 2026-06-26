@@ -2,6 +2,7 @@ package com.guuh.transaction_service.infrastructure.repository;
 
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,7 +23,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 AND (CAST(:initialDueDate AS LocalDateTime) IS NULL OR t.dueDate >= :initialDueDate)
                 AND (CAST(:finalDueDate AS LocalDateTime) IS NULL OR t.dueDate <= :finalDueDate)
             """)
-    List<Transaction> findWithFilter(
+    Page<Transaction> findWithFilter(
             @Param("userId") Long userId,
             @Param("categoryId") Long categoryId,
             @Param("transactionType") TransactionType transactionType,
