@@ -25,6 +25,9 @@ public class JwtUtil {
     @Value("${JWT_KEY}")
     private String secretKey;
 
+    String accessJti = UUID.randomUUID().toString();
+    String refreshJti = UUID.randomUUID().toString();
+
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(
                 secretKey.getBytes(StandardCharsets.UTF_8)
@@ -34,6 +37,7 @@ public class JwtUtil {
     // Gera um token JWT com o nome de usuário e validade de 15 minutos
     public String generateToken(String username) {
         return Jwts.builder()
+                .id(accessJti)
                 .subject(username) // Define o nome de usuário como o assunto do token
                 .claim("token_type", "access")
                 .issuer(issuer)
@@ -46,6 +50,7 @@ public class JwtUtil {
 
     public String generateRefreshToken(String username) {
         return Jwts.builder()
+                .id(refreshJti)
                 .subject(username) // Define o nome de usuário como o assunto do token
                 .claim("token_type", "refresh")
                 .issuer(issuer)
@@ -72,7 +77,7 @@ public class JwtUtil {
                 .requireAudience(audience)
                 .build()
                 .parseSignedClaims(token) // Analisa o token JWT e obtém as claims
-                .getPayload(); // Retorna o corpo das claims
+                .getPayload();// Retorna o corpo das claims
 
     }
 
