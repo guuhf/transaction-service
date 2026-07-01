@@ -66,6 +66,12 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(threatResponse);
     }
 
+    @ExceptionHandler(DateLimitException.class)
+    private ResponseEntity<RestErrorMessage> dateLimitHandler(DateLimitException e) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
+    }
+
 
 
 }

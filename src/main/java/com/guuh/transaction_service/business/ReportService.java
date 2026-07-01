@@ -5,12 +5,16 @@ import com.guuh.transaction_service.business.dto.response.ReportResponseDto;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.entity.User;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
+import com.guuh.transaction_service.infrastructure.exceptions.DateLimitException;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +28,7 @@ public class ReportService {
 
     public ReportResponseDto generateReport(LocalDateTime initialDate,
                                             LocalDateTime finalDate) {
+        checkDate(initialDate, finalDate);
         List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(
                 userService.getLoggedUser().getId(), initialDate,
                 finalDate
@@ -44,6 +49,14 @@ public class ReportService {
                 .build();
     }
 
+    public void checkDate(LocalDateTime initialDate,
+                          LocalDateTime finalDate) {
+       long period = ChronoUnit.DAYS.between(initialDate, finalDate);
+        if(period > 90){
+            throw new DateLimitException("O periodo de datas ultrapassa o limite de 90 dias.");
+        }
+    }
+
     public BigDecimal calculateTransactionTypeTotal(List<Transaction> transactions,
                                                     TransactionType transactionType) {
         BigDecimal total = BigDecimal.ZERO;
@@ -61,7 +74,7 @@ public class ReportService {
 
         for (Transaction transaction : transactions) {
 
-            if (transaction.getTransactionType() == TransactionType.OPENINGBALANCE){
+            if (transaction.getTransactionType() == TransactionType.OPENINGBALANCE) {
                 continue;
             }
 
