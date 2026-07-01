@@ -14,6 +14,7 @@ import com.guuh.transaction_service.infrastructure.repository.RefreshTokenReposi
 import com.guuh.transaction_service.infrastructure.repository.UserRepository;
 import com.guuh.transaction_service.infrastructure.security.JwtUtil;
 import com.guuh.transaction_service.infrastructure.security.UserDetailsServiceImpl;
+import io.jsonwebtoken.Claims;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -122,8 +123,9 @@ public class AuthService {
 
         return LoginResponseDto.builder()
                 .token(jwtUtil.generateToken(userDetails.getUsername()))
-                .refreshToken(refreshToken.getToken())
+                .refreshToken(textEncryptor.decrypt(refreshToken.getToken()))
                 .build();
+
     }
 
     public void validateRefreshToken(String token, String email) {
@@ -131,7 +133,9 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(user.getId()).orElseThrow(() ->
                 new UnauthorizedTokenException("Token inválido!"));
         String tokenDecrypted = textEncryptor.decrypt(refreshToken.getToken());
-        if (!token.equals(tokenDecrypted)){
+        Claims claimsToken = jwtUtil.extractClaims(token);
+        Claims claimsRefresh = jwtUtil.extractClaims(tokenDecrypted);
+        if (!claimsToken.getId().equals(claimsRefresh.getId())){
             throw new UnauthorizedTokenException("Token inválido");
         }
         if (refreshToken.getExpirationDate().isBefore(LocalDate.now()) || !refreshToken.getUser().getId().equals(user.getId())){
