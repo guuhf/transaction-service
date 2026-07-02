@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.NoSuchAlgorithmException;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -48,7 +50,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Credenciais Inválidas"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<LoginResponseDto> userLogin(@RequestBody @Valid LoginRequestDto dto) {
+    public ResponseEntity<LoginResponseDto> userLogin(@RequestBody @Valid LoginRequestDto dto) throws NoSuchAlgorithmException {
         return ResponseEntity.status(200).body(authService.userLogin(dto));
     }
 
@@ -59,7 +61,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Token inválido"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<LoginResponseDto> refreshTokenLogin(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
+    public ResponseEntity<LoginResponseDto> refreshTokenLogin(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) throws NoSuchAlgorithmException{
         return ResponseEntity.status(200).body(authService.refreshTokenLogin(refreshTokenRequestDto));
     }
 }
