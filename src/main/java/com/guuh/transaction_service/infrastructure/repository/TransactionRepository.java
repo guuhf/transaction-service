@@ -37,5 +37,4 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByUserIdAndDateBetween(Long userId,
                                                  LocalDateTime initialDate,
                                                  LocalDateTime finalDate);
-
 }
