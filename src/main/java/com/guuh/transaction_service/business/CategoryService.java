@@ -20,7 +20,6 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper mapper;
     private final UserService userService;
-    private final UserMapper userMapper;
 
     public CategoryResponseDto createCategory(CategoryRequestDto dto){
         validateCategoryUniquess(dto.getName());

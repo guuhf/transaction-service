@@ -49,10 +49,31 @@ public class ReportService {
                 .build();
     }
 
+    public ReportResponseDto generateMonthlyReport(Long userId) {
+        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(userId,
+                LocalDateTime.now().minusMonths(1),
+                LocalDateTime.now()
+        );
+
+        BigDecimal totalIncome = calculateTransactionTypeTotal(transactions, TransactionType.INCOME);
+        BigDecimal totalExpense = calculateTransactionTypeTotal(transactions, TransactionType.EXPENSE);
+        BigDecimal openingBalance = calculateTransactionTypeTotal(transactions, TransactionType.OPENINGBALANCE);
+        return ReportResponseDto.builder()
+                .totalIncome(totalIncome)
+                .totalExpense(totalExpense)
+                .openingBalance(openingBalance)
+                .balance(totalIncome.add(openingBalance).subtract(totalExpense))
+                .totalTransactions(transactions.size())
+                .initialDate(LocalDateTime.now().minusMonths(1))
+                .finalDate(LocalDateTime.now())
+                .categories(calculateCategoryTotals(transactions))
+                .build();
+    }
+
     public void checkDate(LocalDateTime initialDate,
                           LocalDateTime finalDate) {
-       long period = ChronoUnit.DAYS.between(initialDate, finalDate);
-        if(period > 90){
+        long period = ChronoUnit.DAYS.between(initialDate, finalDate);
+        if (period > 90) {
             throw new DateLimitException("O periodo de datas ultrapassa o limite de 90 dias.");
         }
     }
