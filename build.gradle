@@ -17,10 +17,15 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	set('springCloudVersion', "2025.1.1")
+}
+
 dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
 	implementation("io.jsonwebtoken:jjwt-api:0.13.0")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
@@ -41,6 +46,12 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-aop:4.0.0-M2")
 	implementation("com.hazelcast:hazelcast:5.5.0")
 	implementation("org.springframework.security:spring-security-crypto:7.1.0")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
 }
 
 tasks.named('test') {
