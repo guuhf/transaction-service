@@ -30,6 +30,6 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
     public ResponseEntity<UserResponseDto> getLoggedUser(){
-        return ResponseEntity.status(200).body(userService.getLoggedUserDate());
+        return ResponseEntity.status(200).body(userService.getLoggedUserData());
     }
 }

@@ -26,7 +26,7 @@ public class UserService {
                 new UserNotFoundException("Usuário não encontrado"));
     }
 
-    public UserResponseDto getLoggedUserDate(){
+    public UserResponseDto getLoggedUserData(){
         return mapper.toUserDto(getLoggedUser());
     }
 }
