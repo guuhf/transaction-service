@@ -37,16 +37,16 @@ public class ReportService {
         BigDecimal totalIncome = calculateTransactionTypeTotal(transactions, TransactionType.INCOME);
         BigDecimal totalExpense = calculateTransactionTypeTotal(transactions, TransactionType.EXPENSE);
         BigDecimal openingBalance = calculateTransactionTypeTotal(transactions, TransactionType.OPENINGBALANCE);
-        return ReportResponseDto.builder()
-                .totalIncome(totalIncome)
-                .totalExpense(totalExpense)
-                .openingBalance(openingBalance)
-                .balance(totalIncome.add(openingBalance).subtract(totalExpense))
-                .totalTransactions(transactions.size())
-                .initialDate(initialDate)
-                .finalDate(finalDate)
-                .categories(calculateCategoryTotals(transactions))
-                .build();
+        return new ReportResponseDto(
+                totalIncome,
+                totalExpense,
+                openingBalance,
+                totalIncome.add(openingBalance).subtract(totalExpense),
+                transactions.size(),
+                initialDate,
+                finalDate,
+                calculateCategoryTotals(transactions)
+        );
     }
 
     public ReportResponseDto generateMonthlyReport(Long userId) {
@@ -58,16 +58,16 @@ public class ReportService {
         BigDecimal totalIncome = calculateTransactionTypeTotal(transactions, TransactionType.INCOME);
         BigDecimal totalExpense = calculateTransactionTypeTotal(transactions, TransactionType.EXPENSE);
         BigDecimal openingBalance = calculateTransactionTypeTotal(transactions, TransactionType.OPENINGBALANCE);
-        return ReportResponseDto.builder()
-                .totalIncome(totalIncome)
-                .totalExpense(totalExpense)
-                .openingBalance(openingBalance)
-                .balance(totalIncome.add(openingBalance).subtract(totalExpense))
-                .totalTransactions(transactions.size())
-                .initialDate(LocalDateTime.now().minusMonths(1))
-                .finalDate(LocalDateTime.now())
-                .categories(calculateCategoryTotals(transactions))
-                .build();
+        return new ReportResponseDto(
+                totalIncome,
+                totalExpense,
+                openingBalance,
+                totalIncome.add(openingBalance).subtract(totalExpense),
+                transactions.size(),
+                LocalDateTime.now().minusMonths(1),
+                LocalDateTime.now(),
+                calculateCategoryTotals(transactions)
+        );
     }
 
     public void checkDate(LocalDateTime initialDate,

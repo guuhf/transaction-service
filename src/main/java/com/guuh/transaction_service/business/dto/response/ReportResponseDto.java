@@ -1,25 +1,17 @@
 package com.guuh.transaction_service.business.dto.response;
 
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class ReportResponseDto {
-    private BigDecimal totalIncome;
-    private BigDecimal totalExpense;
-    private BigDecimal openingBalance;
-    private BigDecimal balance;
-    private Integer totalTransactions;
-
-    private LocalDateTime initialDate;
-    private LocalDateTime finalDate;
-
-    private List<CategoryReportResponseDto> categories;
+public record ReportResponseDto(
+        BigDecimal totalIncome,
+        BigDecimal totalExpense,
+        BigDecimal openingBalance,
+        BigDecimal balance,
+        Integer totalTransactions,
+        LocalDateTime initialDate,
+        LocalDateTime finalDate,
+        List<CategoryReportResponseDto> categories
+) {
 }
