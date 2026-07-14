@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: transaction-service
+    ports:
+      - "8084:8084"
+    environment:
+      # Usando as variáveis do .env para montar a URL e credenciais
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_AUDIENCE: transaction-service
+      JWT_ISSUER: auth-service
+      JWT_KEY: ${JWT_SECRET_KEY}
+      cron_expression: "0 0 6 1 * *"
+    depends_on:
+      - db
+
+  notification-service:
+    build:
+      context: C:\Users\guuh\Documents\Java\Projetos\transaction-notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      EMAIL_USERNAME: ${EMAIL_USER}
+      EMAIL_PASSWORD: ${EMAIL_PASS}
+      personalName: "guuh"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
