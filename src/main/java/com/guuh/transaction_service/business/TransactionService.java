@@ -28,11 +28,11 @@ public class TransactionService {
     private final UserService userService;
 
     public TransactionResponseDto createTransaction(TransactionRequestDto dto) {
-        amountValidation(dto.getAmount());
+        amountValidation(dto.amount());
         Transaction transaction = mapper.toTransaction(dto);
         transaction.setDate(LocalDateTime.now());
         transaction.setUser(userService.getLoggedUser());
-        Category category = categoryRepository.findByIdAndUserId(dto.getCategoryId(), userService.getLoggedUser().getId()).orElseThrow(() ->
+        Category category = categoryRepository.findByIdAndUserId(dto.categoryId(), userService.getLoggedUser().getId()).orElseThrow(() ->
                 new CategoryNotFoundException("Categoria não encontrada!"));
         transaction.getCategory().setName(category.getName());
         return mapper.toTransactionDto(transactionRepository.save(transaction));
@@ -47,12 +47,12 @@ public class TransactionService {
     public Page<TransactionResponseDto> findTransactions(FilterRequestDto dto, int page) {
        return mapper.toResponseDtoPage(transactionRepository.findWithFilter(
                 userService.getLoggedUser().getId(),
-                dto.getCategoryId(),
-                dto.getTransactionType(),
-                dto.getInitialDate(),
-                dto.getFinalDate(),
-                dto.getInitialDueDate(),
-                dto.getFinalDueDate(),
+                dto.categoryId(),
+                dto.transactionType(),
+                dto.initialDate(),
+                dto.finalDate(),
+                dto.initialDueDate(),
+                dto.finalDueDate(),
                 PageRequest.of(page, 15)
         ));
 
