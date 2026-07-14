@@ -22,7 +22,7 @@ public class CategoryService {
     private final UserService userService;
 
     public CategoryResponseDto createCategory(CategoryRequestDto dto){
-        validateCategoryUniquess(dto.getName());
+        validateCategoryUniquess(dto.name());
         Category category = mapper.toCategory(dto);
         category.setUser(userService.getLoggedUser());
         return mapper.toCategoryDto(categoryRepository.save(category));
@@ -43,7 +43,7 @@ public class CategoryService {
                 id, userService.getLoggedUser().getId()).orElseThrow(()->
                 new CategoryNotFoundException("Categoria não encontrada!"));
 
-        category.setName(dto.getName());
+        category.setName(dto.name());
         return mapper.toCategoryDto(categoryRepository.save(category));
     }
 

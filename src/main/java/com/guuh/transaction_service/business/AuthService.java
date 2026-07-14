@@ -47,7 +47,7 @@ public class AuthService {
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     public UserResponseDto userRegister(RegisterRequestDto dto) {
-        validateEmailUniqueness(dto.getEmail());
+        validateEmailUniqueness(dto.email());
         User user = mapper.toUser(dto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return mapper.toUserDto(userRepository.save(user));
@@ -62,19 +62,19 @@ public class AuthService {
     @Transactional
     public LoginResponseDto userLogin(LoginRequestDto dto) throws NoSuchAlgorithmException{
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
+                new UsernamePasswordAuthenticationToken(dto.email(), dto.password())
         );
 
-        User user = userRepository.findUserByEmail(dto.getEmail());
+        User user = userRepository.findUserByEmail(dto.email());
         RefreshToken refreshToken = manageRefreshToken(user);
         String token = refreshToken.getToken();
         refreshToken.setToken(gerarHashToken(refreshToken.getToken()));
         refreshTokenRepository.save(refreshToken);
 
-        return LoginResponseDto.builder()
-                .token("Bearer " + jwtUtil.generateToken(authentication.getName()))
-                .refreshToken("Bearer " + (token))
-                .build();
+        return new LoginResponseDto(
+                "Bearer " + jwtUtil.generateToken(authentication.getName()),
+                "Bearer " + token
+        );
     }
 
     @Transactional
@@ -94,12 +94,12 @@ public class AuthService {
 
     @Transactional
     public LoginResponseDto refreshTokenLogin(RefreshTokenRequestDto dto) throws NoSuchAlgorithmException{
-        String dtoToken = removeBearer(dto.getRefreshToken());
+        String dtoToken = removeBearer(dto.refreshToken());
         String username = jwtUtil.extractUsername(dtoToken);
-        if (!jwtUtil.validateToken(dto.getRefreshToken(), username) || !jwtUtil.isRefreshToken(dto.getRefreshToken())) {
+        if (!jwtUtil.validateToken(dto.refreshToken(), username) || !jwtUtil.isRefreshToken(dto.refreshToken())) {
             throw new UnauthorizedTokenException("Refresh token inválido");
         }
-        validateRefreshToken(dto.getRefreshToken(), username);
+        validateRefreshToken(dto.refreshToken(), username);
 
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
         User user = userRepository.findUserByEmail(userDetails.getUsername());
@@ -111,10 +111,10 @@ public class AuthService {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return LoginResponseDto.builder()
-                .token("Bearer " + jwtUtil.generateToken(userDetails.getUsername()))
-                .refreshToken("Bearer " + token)
-                .build();
+        return new LoginResponseDto(
+                "Bearer " + jwtUtil.generateToken(userDetails.getUsername()),
+                "Bearer " + token
+        );
 
     }
 
