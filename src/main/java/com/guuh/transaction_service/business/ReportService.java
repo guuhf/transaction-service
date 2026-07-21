@@ -3,7 +3,6 @@ package com.guuh.transaction_service.business;
 import com.guuh.transaction_service.business.dto.response.CategoryReportResponseDto;
 import com.guuh.transaction_service.business.dto.response.ReportResponseDto;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
-import com.guuh.transaction_service.infrastructure.entity.User;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import com.guuh.transaction_service.infrastructure.exceptions.DateLimitException;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
@@ -11,9 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
