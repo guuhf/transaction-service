@@ -27,6 +27,7 @@ public class JwtUtil {
 
     String accessJti = UUID.randomUUID().toString();
     String refreshJti = UUID.randomUUID().toString();
+    private static final String TOKEN_TYPE = "token_type";
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(
@@ -39,7 +40,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .id(accessJti)
                 .subject(username) // Define o nome de usuário como o assunto do token
-                .claim("token_type", "access")
+                .claim(TOKEN_TYPE, "access")
                 .issuer(issuer)
                 .audience().add(audience).and()
                 .issuedAt(new Date()) // Define a data e hora de emissão do token
@@ -52,7 +53,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .id(refreshJti)
                 .subject(username) // Define o nome de usuário como o assunto do token
-                .claim("token_type", "refresh")
+                .claim(TOKEN_TYPE, "refresh")
                 .issuer(issuer)
                 .audience().add(audience).and()
                 .issuedAt(new Date()) // Define a data e hora de emissão do token
@@ -62,11 +63,11 @@ public class JwtUtil {
     }
 
     public boolean isAccessToken(String token){
-        return "access".equals(extractClaims(token).get("token_type", String.class));
+        return "access".equals(extractClaims(token).get(TOKEN_TYPE, String.class));
     }
 
     public boolean isRefreshToken(String token){
-        return "refresh".equals(extractClaims(token).get("token_type", String.class));
+        return "refresh".equals(extractClaims(token).get(TOKEN_TYPE, String.class));
     }
 
     // Extrai as claims do token JWT (informações adicionais do token)

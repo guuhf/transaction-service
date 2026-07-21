@@ -5,7 +5,6 @@ import com.guuh.transaction_service.business.CategoryService;
 import com.guuh.transaction_service.business.dto.request.CategoryRequestDto;
 import com.guuh.transaction_service.business.dto.response.CategoryResponseDto;
 import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
-import com.guuh.transaction_service.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

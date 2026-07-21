@@ -13,7 +13,6 @@ import com.guuh.transaction_service.infrastructure.repository.RefreshTokenReposi
 import com.guuh.transaction_service.infrastructure.repository.UserRepository;
 import com.guuh.transaction_service.infrastructure.security.JwtUtil;
 import com.guuh.transaction_service.infrastructure.security.UserDetailsServiceImpl;
-import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +44,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private static final String BEARER_PREFIX = "Bearer ";
 
     public UserResponseDto userRegister(RegisterRequestDto dto) {
         validateEmailUniqueness(dto.email());
@@ -72,8 +72,8 @@ public class AuthService {
         refreshTokenRepository.save(refreshToken);
 
         return new LoginResponseDto(
-                "Bearer " + jwtUtil.generateToken(authentication.getName()),
-                "Bearer " + token
+                BEARER_PREFIX + jwtUtil.generateToken(authentication.getName()),
+                BEARER_PREFIX + token
         );
     }
 
@@ -112,8 +112,8 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return new LoginResponseDto(
-                "Bearer " + jwtUtil.generateToken(userDetails.getUsername()),
-                "Bearer " + token
+                BEARER_PREFIX + jwtUtil.generateToken(userDetails.getUsername()),
+                BEARER_PREFIX + token
         );
 
     }
@@ -131,7 +131,7 @@ public class AuthService {
     }
 
     public String removeBearer(String token){
-        if (token.startsWith("Bearer ")){
+        if (token.startsWith(BEARER_PREFIX)){
             return token.substring(7);
         }
 
