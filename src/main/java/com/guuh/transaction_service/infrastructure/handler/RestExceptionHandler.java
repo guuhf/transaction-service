@@ -9,25 +9,23 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.security.NoSuchAlgorithmException;
-
 @ControllerAdvice
 public class RestExceptionHandler {
 
     @ExceptionHandler(InvalidAmountException.class)
-    private ResponseEntity<RestErrorMessage> InvalidAmountHandler(InvalidAmountException e) {
+    private ResponseEntity<RestErrorMessage> invalidAmountHandler(InvalidAmountException e) {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST, e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
     }
 
     @ExceptionHandler(CategoryAlreadyExistsException.class)
-    private ResponseEntity<RestErrorMessage> CategoryAlreadyExistsHandler(CategoryAlreadyExistsException e) {
+    private ResponseEntity<RestErrorMessage> categoryAlreadyExistsHandler(CategoryAlreadyExistsException e) {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
-    private ResponseEntity<RestErrorMessage> CategoryNotFoundHandler(CategoryNotFoundException e) {
+    private ResponseEntity<RestErrorMessage> categoryNotFoundHandler(CategoryNotFoundException e) {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
     }

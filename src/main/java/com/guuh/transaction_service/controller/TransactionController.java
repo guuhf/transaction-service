@@ -32,7 +32,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "400", description = "O valor da transação é inválido"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    private ResponseEntity<TransactionResponseDto> createTransaction(@RequestBody @Valid TransactionRequestDto dto){
+    public ResponseEntity<TransactionResponseDto> createTransaction(@RequestBody @Valid TransactionRequestDto dto){
         return ResponseEntity.status(201).body(transactionService.createTransaction(dto));
     }
 
@@ -42,7 +42,7 @@ public class TransactionController {
             @ApiResponse(responseCode = "200", description = "Transações listadas"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    private ResponseEntity<Page<TransactionResponseDto>> getTransactions(FilterRequestDto dto,
+    public ResponseEntity<Page<TransactionResponseDto>> getTransactions(FilterRequestDto dto,
                                                                          @RequestParam("page") int page) {
         return ResponseEntity.status(200).body(transactionService.findTransactions(dto, page));
     }
