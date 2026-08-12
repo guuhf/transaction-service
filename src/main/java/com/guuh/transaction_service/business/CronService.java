@@ -19,7 +19,7 @@ public class CronService {
     private final NotificationClient client;
     private final UserRepository userRepository;
 
-    @Scheduled(cron = "${cron_expression}")
+    @Scheduled(cron = "${cron.expression}")
     public void sendEmail(){
         int page = 0;
         Page<User> users;

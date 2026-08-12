@@ -39,10 +39,10 @@ bucket4j:
               time: 1
               unit: minutes
 cron:
-  expression: 0 6 1 * *
+  expression: ${CRON_EXPRESSION:0 0 6 1 * *}
 
 notification:
-  url: localhost:8080
+  url: ${NOTIFICATION_URL:http://localhost:8080}
 
 server:
   port: 8084
