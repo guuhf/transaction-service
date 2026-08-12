@@ -1,0 +1,26 @@
+CREATE TABLE transactions
+(
+    ID               BIGINT PRIMARY KEY,
+    CATEGORY_ID      BIGINT       not null,
+    USER_ID          BIGINT       not null,
+    TRANSACTION_TYPE VARCHAR(100) not null,
+    DESCRIPTION      VARCHAR(150) not null,
+    AMOUNT           DECIMAL      not null,
+    DATE             TIMESTAMP,
+    DUE_DATE         TIMESTAMP,
+
+    CONSTRAINT fk_category_transactions
+        FOREIGN KEY (CATEGORY_ID)
+            REFERENCES category (id),
+
+    CONSTRAINT fk_user_transactions
+        FOREIGN KEY (USER_ID)
+            REFERENCES users (id),
+
+    CONSTRAINT ck_amount_positive
+        CHECK (AMOUNT >= 0),
+
+    CONSTRAINT ck_due_date_after_date
+        CHECK ( DUE_DATE > DATE
+)
+    )

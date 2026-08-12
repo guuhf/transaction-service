@@ -1,0 +1,105 @@
+package com.guuh.transaction_service.infrastructure.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+@Service
+public class JwtUtil {
+    
+    @Value("${JWT_ISSUER}")
+    private String issuer;
+
+    @Value("${JWT_AUDIENCE}")
+    private String audience;
+
+    // Chave secreta usada para assinar e verificar tokens JWT
+    @Value("${JWT_KEY}")
+    private String secretKey;
+
+    String accessJti = UUID.randomUUID().toString();
+    String refreshJti = UUID.randomUUID().toString();
+    private static final String TOKEN_TYPE = "token_type";
+
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(
+                secretKey.getBytes(StandardCharsets.UTF_8)
+        );
+    }
+
+    // Gera um token JWT com o nome de usuário e validade de 15 minutos
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .id(accessJti)
+                .subject(username) // Define o nome de usuário como o assunto do token
+                .claim(TOKEN_TYPE, "access")
+                .issuer(issuer)
+                .audience().add(audience).and()
+                .issuedAt(new Date()) // Define a data e hora de emissão do token
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // Define a data e hora de expiração (15 minutos a partir da emissão)
+                .signWith(getSigningKey()) // Converte a chave secreta em bytes e assina o token com ela
+                .compact(); // Constrói o token JWT
+    }
+
+    public String generateRefreshToken(String username) {
+        return Jwts.builder()
+                .id(refreshJti)
+                .subject(username) // Define o nome de usuário como o assunto do token
+                .claim(TOKEN_TYPE, "refresh")
+                .issuer(issuer)
+                .audience().add(audience).and()
+                .issuedAt(new Date()) // Define a data e hora de emissão do token
+                .expiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(15))) // Define a data e hora de expiração (15 dias a partir da emissão)
+                .signWith(getSigningKey()) // Converte a chave secreta em bytes e assina o token com ela
+                .compact(); // Constrói o token JWT
+    }
+
+    public boolean isAccessToken(String token){
+        return "access".equals(extractClaims(token).get(TOKEN_TYPE, String.class));
+    }
+
+    public boolean isRefreshToken(String token){
+        return "refresh".equals(extractClaims(token).get(TOKEN_TYPE, String.class));
+    }
+
+    // Extrai as claims do token JWT (informações adicionais do token)
+    public Claims extractClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey()) // Define a chave secreta para validar a assinatura do token
+                .requireIssuer(issuer)
+                .requireAudience(audience)
+                .build()
+                .parseSignedClaims(token) // Analisa o token JWT e obtém as claims
+                .getPayload();// Retorna o corpo das claims
+
+    }
+
+
+    // Extrai o nome de usuário do token JWT
+    public String extractUsername(String token) {
+        // Obtém o assunto (nome de usuário) das claims do token
+        return extractClaims(token).getSubject();
+    }
+
+    // Verifica se o token JWT está expirado
+    public boolean isTokenExpired(String token) {
+        // Compara a data de expiração do token com a data atual
+        return extractClaims(token).getExpiration().before(new Date());
+    }
+
+    // Valida o token JWT verificando o nome de usuário e se o token não está expirado
+    public boolean validateToken(String token, String username) {
+        // Extrai o nome de usuário do token
+        final String extractedUsername = extractUsername(token);
+        // Verifica se o nome de usuário do token corresponde ao fornecido e se o token não está expirado
+        return (extractedUsername.equals(username) && !isTokenExpired(token));
+    }
+}

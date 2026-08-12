@@ -1,0 +1,64 @@
+services:
+  app:
+    build: .
+    container_name: transaction-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_AUDIENCE: transaction-service
+      JWT_ISSUER: auth-service
+      JWT_KEY: ${JWT_SECRET_KEY}
+      CRON_EXPRESSION: "0 0 6 1 * *"
+      NOTIFICATION_URL: http://transaction-notification:8080
+    depends_on:
+      db:
+        condition: service_healthy
+      transaction-notification:
+        condition: service_started
+
+  transaction-notification:
+    image: guuhdev/transaction-notification-service
+    container_name: transaction-notification
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_MAIL_HOST: mailpit
+      SPRING_MAIL_PORT: 1025
+      SPRING_MAIL_USERNAME: ""
+      SPRING_MAIL_PASSWORD: ""
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "false"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "false"
+      SEND_EMAIL_FROM: ${EMAIL_FROM:-no-reply@transaction-service.local}
+      SEND_EMAIL_PERSONALNAME: ${EMAIL_PERSONAL_NAME:-Transaction Service}
+    depends_on:
+      mailpit:
+        condition: service_started
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: transaction-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
