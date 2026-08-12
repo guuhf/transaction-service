@@ -36,7 +36,7 @@ public class AuthController {
     @Operation(summary = "Registrar um usuário")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Usuário registrado"),
-            @ApiResponse(responseCode = "409", description = "Email ja existente"),
+            @ApiResponse(responseCode = "409", description = "Email já existente"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
     public ResponseEntity<UserResponseDto> userRegister(@RequestBody @Valid RegisterRequestDto dto) {
