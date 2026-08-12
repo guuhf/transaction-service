@@ -62,7 +62,7 @@ tasks.named('test') {
 sonarqube {
 	properties {
 		property "sonar.projectKey", "transaction-service"
-		property "sonar.host.url", "http://localhost:9000"
-		property "sonar.login", "sqa_295abbc4f44b21fa9af144a70c88b728d0a735b8"
+		property "sonar.host.url", System.getenv("SONAR_URL")
+		property "sonar.login", System.getenv("SONAR_TOKEN")
 	}
 }
