@@ -1,4 +1,4 @@
-# Transaction Service
+# Personal Finance API
 
 API REST para controle financeiro pessoal, com autenticação JWT, gerenciamento de categorias, registro de transações, geração de relatórios financeiros e envio de notificações por email.
 
