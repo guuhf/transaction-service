@@ -1,8 +1,8 @@
 package com.guuh.transaction_service.business;
 
-import com.guuh.transaction_service.business.dto.request.CategoryRequestDto;
-import com.guuh.transaction_service.business.dto.response.CategoryResponseDto;
-import com.guuh.transaction_service.business.mapper.CategoryMapper;
+import com.guuh.transaction_service.api.dto.request.CategoryRequestDto;
+import com.guuh.transaction_service.api.dto.response.CategoryResponseDto;
+import com.guuh.transaction_service.api.mapper.CategoryMapper;
 import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryAlreadyExistsException;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
