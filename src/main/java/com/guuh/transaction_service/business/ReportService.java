@@ -1,7 +1,7 @@
 package com.guuh.transaction_service.business;
 
-import com.guuh.transaction_service.business.dto.response.CategoryReportResponseDto;
-import com.guuh.transaction_service.business.dto.response.ReportResponseDto;
+import com.guuh.transaction_service.api.dto.response.CategoryReportResponseDto;
+import com.guuh.transaction_service.api.dto.response.ReportResponseDto;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import com.guuh.transaction_service.infrastructure.exceptions.DateLimitException;

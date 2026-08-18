@@ -1,11 +1,11 @@
 package com.guuh.transaction_service.business;
 
-import com.guuh.transaction_service.business.dto.request.LoginRequestDto;
-import com.guuh.transaction_service.business.dto.request.RefreshTokenRequestDto;
-import com.guuh.transaction_service.business.dto.request.RegisterRequestDto;
-import com.guuh.transaction_service.business.dto.response.LoginResponseDto;
-import com.guuh.transaction_service.business.dto.response.UserResponseDto;
-import com.guuh.transaction_service.business.mapper.UserMapper;
+import com.guuh.transaction_service.api.dto.request.LoginRequestDto;
+import com.guuh.transaction_service.api.dto.request.RefreshTokenRequestDto;
+import com.guuh.transaction_service.api.dto.request.RegisterRequestDto;
+import com.guuh.transaction_service.api.dto.response.LoginResponseDto;
+import com.guuh.transaction_service.api.dto.response.UserResponseDto;
+import com.guuh.transaction_service.api.mapper.UserMapper;
 import com.guuh.transaction_service.infrastructure.entity.RefreshToken;
 import com.guuh.transaction_service.infrastructure.entity.User;
 import com.guuh.transaction_service.infrastructure.exceptions.UnauthorizedTokenException;
