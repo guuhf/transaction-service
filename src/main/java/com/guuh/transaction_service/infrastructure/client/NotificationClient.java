@@ -1,7 +1,7 @@
 package com.guuh.transaction_service.infrastructure.client;
 
 
-import com.guuh.transaction_service.business.dto.response.ReportResponseDto;
+import com.guuh.transaction_service.api.dto.response.ReportResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
