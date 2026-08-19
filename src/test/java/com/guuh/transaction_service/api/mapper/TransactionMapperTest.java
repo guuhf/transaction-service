@@ -46,8 +46,8 @@ public class TransactionMapperTest {
         user = User.builder()
                 .id(1L)
                 .name("Gustavo")
-                .email("gustavo.jacintof@gmail.com")
-                .password("gu080408")
+                .email("teste@gmail.com")
+                .password("teste123")
                 .build();
 
         category = Category.builder()

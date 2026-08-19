@@ -1,7 +1,9 @@
 package com.guuh.transaction_service.api.mapper;
 
 import com.guuh.transaction_service.api.dto.request.RegisterRequestDto;
+import com.guuh.transaction_service.api.dto.request.RegisterRequestDtoFixture;
 import com.guuh.transaction_service.api.dto.response.UserResponseDto;
+import com.guuh.transaction_service.api.dto.response.UserResponseDtoFixture;
 import com.guuh.transaction_service.api.mapper.UserMapper;
 import com.guuh.transaction_service.infrastructure.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,20 +25,20 @@ public class UserMapperTest {
         user = User.builder()
                 .id(1L)
                 .name("Gustavo")
-                .email("gustavo.jacintof@gmail.com")
-                .password("gu080408")
+                .email("teste@gmail.com")
+                .password("teste123")
                 .build();
 
-        request = new RegisterRequestDto(
+        request = RegisterRequestDtoFixture.build(
                 "Gustavo",
-                "gustavo.jacintof@gmail.com",
-                "gu080408"
+                "teste@gmail.com",
+                "teste123"
         );
 
-        response = new UserResponseDto(
+        response = UserResponseDtoFixture.build(
                 1L,
                 "Gustavo",
-                "gustavo.jacintof@gmail.com"
+                "teste@gmail.com"
         );
     }
 
