@@ -29,8 +29,8 @@ public class CategoryMapperTest {
         user = User.builder()
                 .id(1L)
                 .name("Gustavo")
-                .email("EMAIL_REMOVIDO")
-                .password("SENHA_REMOVIDA")
+                .email("teste@gmail.com")
+                .password("teste123")
                 .build();
 
         category = Category.builder()
