@@ -21,14 +21,14 @@ public class CategoryService {
     private final UserService userService;
 
     public CategoryResponseDto createCategory(CategoryRequestDto dto){
-        validateCategoryUniquess(dto.name());
+        validateCategoryUniqueness(dto.name());
         Category category = mapper.toCategory(dto);
         category.setUser(userService.getLoggedUser());
         return mapper.toCategoryDto(categoryRepository.save(category));
     }
 
-    public void validateCategoryUniquess(String name){
-        if (categoryRepository.existsByNameAndUserId(name, userService.getLoggedUser().getId())){
+    public void validateCategoryUniqueness(String name){
+        if (categoryRepository.existsByNameIgnoreCaseAndUserId(name, userService.getLoggedUser().getId())){
             throw new CategoryAlreadyExistsException("Essa categoria ja foi registrada!");
         }
     }

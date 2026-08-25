@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,15 +22,29 @@ public class ReportService {
 
     public ReportResponseDto generateReport(LocalDateTime initialDate,
                                             LocalDateTime finalDate) {
+        Long userId = userService.getLoggedUser().getId();
+
+        return buildReport(userId, initialDate, finalDate);
+    }
+
+    public ReportResponseDto generateMonthlyReport(Long userId) {
+        LocalDateTime finalDate = LocalDateTime.now();
+        LocalDateTime initialDate = finalDate.minusMonths(1);
+
+        return buildReport(userId, initialDate, finalDate);
+    }
+
+    private ReportResponseDto buildReport(Long userId,
+                                          LocalDateTime initialDate,
+                                          LocalDateTime finalDate) {
         checkDate(initialDate, finalDate);
-        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(
-                userService.getLoggedUser().getId(), initialDate,
-                finalDate
-        );
+
+        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(userId, initialDate, finalDate);
 
         BigDecimal totalIncome = calculateTransactionTypeTotal(transactions, TransactionType.INCOME);
         BigDecimal totalExpense = calculateTransactionTypeTotal(transactions, TransactionType.EXPENSE);
         BigDecimal openingBalance = calculateTransactionTypeTotal(transactions, TransactionType.OPENINGBALANCE);
+
         return new ReportResponseDto(
                 totalIncome,
                 totalExpense,
@@ -42,27 +53,6 @@ public class ReportService {
                 transactions.size(),
                 initialDate,
                 finalDate,
-                calculateCategoryTotals(transactions)
-        );
-    }
-
-    public ReportResponseDto generateMonthlyReport(Long userId) {
-        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(userId,
-                LocalDateTime.now().minusMonths(1),
-                LocalDateTime.now()
-        );
-
-        BigDecimal totalIncome = calculateTransactionTypeTotal(transactions, TransactionType.INCOME);
-        BigDecimal totalExpense = calculateTransactionTypeTotal(transactions, TransactionType.EXPENSE);
-        BigDecimal openingBalance = calculateTransactionTypeTotal(transactions, TransactionType.OPENINGBALANCE);
-        return new ReportResponseDto(
-                totalIncome,
-                totalExpense,
-                openingBalance,
-                totalIncome.add(openingBalance).subtract(totalExpense),
-                transactions.size(),
-                LocalDateTime.now().minusMonths(1),
-                LocalDateTime.now(),
                 calculateCategoryTotals(transactions)
         );
     }
@@ -88,7 +78,7 @@ public class ReportService {
 
     public List<CategoryReportResponseDto> calculateCategoryTotals(List<Transaction> transactions) {
 
-        Map<String, BigDecimal> categoryReport = new HashMap<>();
+        Map<String, BigDecimal> categoryReport = new LinkedHashMap<>();
 
         for (Transaction transaction : transactions) {
 
