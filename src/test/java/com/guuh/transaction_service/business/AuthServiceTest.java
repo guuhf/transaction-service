@@ -57,6 +57,7 @@ public class AuthServiceTest {
     private LoginResponseDto loginResponse;
     @Mock
     private RefreshTokenRequestDto refreshTokenRequest;
+    @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private AuthenticationManager authenticationManager;
@@ -64,7 +65,7 @@ public class AuthServiceTest {
     private JwtUtil jwtUtil;
 
     @BeforeEach
-    public void setup() throws NoSuchAlgorithmException {
+    void setup() throws NoSuchAlgorithmException {
         user = User.builder()
                 .id(1L)
                 .name("Gustavo")
