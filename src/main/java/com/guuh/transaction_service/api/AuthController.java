@@ -61,7 +61,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Token inválido"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<LoginResponseDto> refreshTokenLogin(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) throws NoSuchAlgorithmException{
+    public ResponseEntity<LoginResponseDto> refreshTokenLogin(@RequestBody @Valid RefreshTokenRequestDto refreshTokenRequestDto) throws NoSuchAlgorithmException{
         return ResponseEntity.status(200).body(authService.refreshTokenLogin(refreshTokenRequestDto));
     }
 }
