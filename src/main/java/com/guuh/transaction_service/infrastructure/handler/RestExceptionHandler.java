@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -38,8 +40,8 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     private ResponseEntity<RestErrorMessage> badCredentialsHandler(BadCredentialsException e) {
-        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, "Email ou senha inválidos");
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.UNAUTHORIZED, "Email ou senha inválidos");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(threatResponse);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -66,8 +68,8 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(threatResponse);
     }
 
-    @ExceptionHandler(DateLimitException.class)
-    private ResponseEntity<RestErrorMessage> dateLimitHandler(DateLimitException e) {
+    @ExceptionHandler(InvalidDatesException.class)
+    private ResponseEntity<RestErrorMessage> dateLimitHandler(InvalidDatesException e) {
         RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
     }
@@ -78,6 +80,25 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<RestErrorMessage> handleValidationException(
+            MethodArgumentNotValidException exception
+    ) {
+
+        String message = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(FieldError::getDefaultMessage)
+                .findFirst()
+                .orElse("Dados inválidos");
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new RestErrorMessage(
+                        HttpStatus.BAD_REQUEST,
+                        message
+                ));
+    }
 
 
 
