@@ -1,6 +1,5 @@
 package com.guuh.transaction_service.business;
 
-import com.guuh.transaction_service.api.dto.response.CategoryReportResponseDto;
 import com.guuh.transaction_service.api.dto.response.CategoryReportResponseDtoFixture;
 import com.guuh.transaction_service.api.dto.response.ReportResponseDto;
 import com.guuh.transaction_service.api.dto.response.ReportResponseDtoFixture;
@@ -8,7 +7,7 @@ import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.entity.User;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
-import com.guuh.transaction_service.infrastructure.exceptions.DateLimitException;
+import com.guuh.transaction_service.infrastructure.exceptions.InvalidDatesException;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -188,7 +186,7 @@ public class ReportServiceTest {
         LocalDateTime initialDate = LocalDateTime.of(2026, 1, 1, 0, 0);
         LocalDateTime finalDate = LocalDateTime.of(2026, 5, 1, 0, 0);
         assertThrows(
-                DateLimitException.class,
+                InvalidDatesException.class,
                 () -> reportService.checkDate(initialDate, finalDate)
         );
     }
