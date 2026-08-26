@@ -33,7 +33,7 @@ public class TransactionService {
         transaction.setUser(userService.getLoggedUser());
         Category category = categoryRepository.findByIdAndUserId(dto.categoryId(), userService.getLoggedUser().getId()).orElseThrow(() ->
                 new CategoryNotFoundException("Categoria não encontrada!"));
-        transaction.getCategory().setName(category.getName());
+        transaction.setCategory(category);
         return mapper.toTransactionDto(transactionRepository.save(transaction));
     }
 
