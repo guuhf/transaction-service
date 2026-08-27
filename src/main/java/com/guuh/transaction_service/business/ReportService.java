@@ -63,7 +63,7 @@ public class ReportService {
     public void checkDate(LocalDateTime initialDate,
                           LocalDateTime finalDate) {
         long period = ChronoUnit.DAYS.between(initialDate, finalDate);
-        if (period > 90 || initialDate.isBefore(finalDate)) {
+        if (period > 90 || initialDate.isAfter(finalDate)) {
             throw new InvalidDatesException("Periodo de datas inválidos.");
         }
     }
