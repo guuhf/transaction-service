@@ -1,6 +1,6 @@
 package com.guuh.transaction_service.business;
 
-import com.guuh.transaction_service.business.dto.response.ReportResponseDto;
+import com.guuh.transaction_service.api.dto.response.ReportResponseDto;
 import com.guuh.transaction_service.infrastructure.client.NotificationClient;
 import com.guuh.transaction_service.infrastructure.entity.User;
 import com.guuh.transaction_service.infrastructure.repository.UserRepository;

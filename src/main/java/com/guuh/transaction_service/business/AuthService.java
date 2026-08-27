@@ -1,13 +1,14 @@
 package com.guuh.transaction_service.business;
 
-import com.guuh.transaction_service.business.dto.request.LoginRequestDto;
-import com.guuh.transaction_service.business.dto.request.RefreshTokenRequestDto;
-import com.guuh.transaction_service.business.dto.request.RegisterRequestDto;
-import com.guuh.transaction_service.business.dto.response.LoginResponseDto;
-import com.guuh.transaction_service.business.dto.response.UserResponseDto;
-import com.guuh.transaction_service.business.mapper.UserMapper;
+import com.guuh.transaction_service.api.dto.request.LoginRequestDto;
+import com.guuh.transaction_service.api.dto.request.RefreshTokenRequestDto;
+import com.guuh.transaction_service.api.dto.request.RegisterRequestDto;
+import com.guuh.transaction_service.api.dto.response.LoginResponseDto;
+import com.guuh.transaction_service.api.dto.response.UserResponseDto;
+import com.guuh.transaction_service.api.mapper.UserMapper;
 import com.guuh.transaction_service.infrastructure.entity.RefreshToken;
 import com.guuh.transaction_service.infrastructure.entity.User;
+import com.guuh.transaction_service.infrastructure.exceptions.EmailAlreadyExistsException;
 import com.guuh.transaction_service.infrastructure.exceptions.UnauthorizedTokenException;
 import com.guuh.transaction_service.infrastructure.repository.RefreshTokenRepository;
 import com.guuh.transaction_service.infrastructure.repository.UserRepository;
@@ -18,11 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +54,7 @@ public class AuthService {
 
     public void validateEmailUniqueness(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new BadCredentialsException("Email ou senha inválidos!");
+            throw new EmailAlreadyExistsException("Email já cadastrado!");
         }
     }
 
@@ -68,7 +67,7 @@ public class AuthService {
         User user = userRepository.findUserByEmail(dto.email());
         RefreshToken refreshToken = manageRefreshToken(user);
         String token = refreshToken.getToken();
-        refreshToken.setToken(gerarHashToken(refreshToken.getToken()));
+        refreshToken.setToken(gerarHashToken(token));
         refreshTokenRepository.save(refreshToken);
 
         return new LoginResponseDto(
@@ -96,37 +95,34 @@ public class AuthService {
     public LoginResponseDto refreshTokenLogin(RefreshTokenRequestDto dto) throws NoSuchAlgorithmException{
         String dtoToken = removeBearer(dto.refreshToken());
         String username = jwtUtil.extractUsername(dtoToken);
-        if (!jwtUtil.validateToken(dto.refreshToken(), username) || !jwtUtil.isRefreshToken(dto.refreshToken())) {
-            throw new UnauthorizedTokenException("Refresh token inválido");
-        }
-        validateRefreshToken(dto.refreshToken(), username);
+        validateRefreshToken(dtoToken, username);
 
-        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
-        User user = userRepository.findUserByEmail(userDetails.getUsername());
+        User user = userRepository.findUserByEmail(username);
         RefreshToken refreshToken = manageRefreshToken(user);
         String token = refreshToken.getToken();
         refreshToken.setToken(gerarHashToken(refreshToken.getToken()));
         refreshTokenRepository.save(refreshToken);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return new LoginResponseDto(
-                BEARER_PREFIX + jwtUtil.generateToken(userDetails.getUsername()),
+                BEARER_PREFIX + jwtUtil.generateToken(username),
                 BEARER_PREFIX + token
         );
 
     }
 
-    public void validateRefreshToken(String token, String email) throws NoSuchAlgorithmException{
-        User user = userRepository.findUserByEmail(email);
+    public void validateRefreshToken(String token, String username) throws NoSuchAlgorithmException{
+        User user = userRepository.findUserByEmail(username);
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(user.getId()).orElseThrow(() ->
                 new UnauthorizedTokenException("Token inválido!"));
-        if (!gerarHashToken(token).equals(refreshToken.getToken())){
-            throw new UnauthorizedTokenException("Token inválido");
+
+        if (!jwtUtil.validateToken(token, username) || !jwtUtil.isRefreshToken(token)) {
+            throw new UnauthorizedTokenException("Token inválido!");
         }
-        if (refreshToken.getExpirationDate().isBefore(LocalDate.now()) || !refreshToken.getUser().getId().equals(user.getId())){
-            throw new UnauthorizedTokenException("Token inválido");
+        if (!gerarHashToken(token).equals(refreshToken.getToken())){
+            throw new UnauthorizedTokenException("Token inválido!");
         }
     }
 

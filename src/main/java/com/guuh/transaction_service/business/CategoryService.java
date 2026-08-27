@@ -1,8 +1,8 @@
 package com.guuh.transaction_service.business;
 
-import com.guuh.transaction_service.business.dto.request.CategoryRequestDto;
-import com.guuh.transaction_service.business.dto.response.CategoryResponseDto;
-import com.guuh.transaction_service.business.mapper.CategoryMapper;
+import com.guuh.transaction_service.api.dto.request.CategoryRequestDto;
+import com.guuh.transaction_service.api.dto.response.CategoryResponseDto;
+import com.guuh.transaction_service.api.mapper.CategoryMapper;
 import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryAlreadyExistsException;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
@@ -21,14 +21,14 @@ public class CategoryService {
     private final UserService userService;
 
     public CategoryResponseDto createCategory(CategoryRequestDto dto){
-        validateCategoryUniquess(dto.name());
+        validateCategoryUniqueness(dto.name());
         Category category = mapper.toCategory(dto);
         category.setUser(userService.getLoggedUser());
         return mapper.toCategoryDto(categoryRepository.save(category));
     }
 
-    public void validateCategoryUniquess(String name){
-        if (categoryRepository.existsByNameAndUserId(name, userService.getLoggedUser().getId())){
+    public void validateCategoryUniqueness(String name){
+        if (categoryRepository.existsByNameIgnoreCaseAndUserId(name, userService.getLoggedUser().getId())){
             throw new CategoryAlreadyExistsException("Essa categoria ja foi registrada!");
         }
     }
@@ -38,6 +38,7 @@ public class CategoryService {
     }
 
     public CategoryResponseDto updateCategory(CategoryRequestDto dto, Long id){
+        validateCategoryUniqueness(dto.name());
         Category category = categoryRepository.findByIdAndUserId(
                 id, userService.getLoggedUser().getId()).orElseThrow(()->
                 new CategoryNotFoundException("Categoria não encontrada!"));

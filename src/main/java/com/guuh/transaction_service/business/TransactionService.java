@@ -1,9 +1,9 @@
 package com.guuh.transaction_service.business;
 
-import com.guuh.transaction_service.business.dto.request.FilterRequestDto;
-import com.guuh.transaction_service.business.dto.request.TransactionRequestDto;
-import com.guuh.transaction_service.business.dto.response.TransactionResponseDto;
-import com.guuh.transaction_service.business.mapper.TransactionMapper;
+import com.guuh.transaction_service.api.dto.request.FilterRequestDto;
+import com.guuh.transaction_service.api.dto.request.TransactionRequestDto;
+import com.guuh.transaction_service.api.dto.response.TransactionResponseDto;
+import com.guuh.transaction_service.api.mapper.TransactionMapper;
 import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class TransactionService {
         transaction.setUser(userService.getLoggedUser());
         Category category = categoryRepository.findByIdAndUserId(dto.categoryId(), userService.getLoggedUser().getId()).orElseThrow(() ->
                 new CategoryNotFoundException("Categoria não encontrada!"));
-        transaction.getCategory().setName(category.getName());
+        transaction.setCategory(category);
         return mapper.toTransactionDto(transactionRepository.save(transaction));
     }
 
