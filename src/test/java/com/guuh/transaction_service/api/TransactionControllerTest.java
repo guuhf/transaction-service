@@ -4,9 +4,11 @@ import com.guuh.transaction_service.api.dto.request.FilterRequestDto;
 import com.guuh.transaction_service.api.dto.request.FilterRequestDtoFixture;
 import com.guuh.transaction_service.api.dto.request.TransactionRequestDto;
 import com.guuh.transaction_service.api.dto.request.TransactionRequestDtoFixture;
+import com.guuh.transaction_service.api.dto.response.TransactionPageResponseDto;
 import com.guuh.transaction_service.api.dto.response.TransactionResponseDto;
 import com.guuh.transaction_service.api.dto.response.TransactionResponseDtoFixture;
 import com.guuh.transaction_service.business.TransactionService;
+import com.guuh.transaction_service.infrastructure.enums.TransactionStatus;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
 import com.guuh.transaction_service.infrastructure.exceptions.InvalidAmountException;
@@ -44,7 +46,7 @@ public class TransactionControllerTest {
     private TransactionRequestDto request;
     private TransactionResponseDto response;
     private FilterRequestDto filterRequest;
-    private Page<TransactionResponseDto> responsePage;
+    private TransactionPageResponseDto<TransactionResponseDto>responsePage;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private MockMvc mockMvc;
     private String url;
@@ -72,6 +74,7 @@ public class TransactionControllerTest {
 
         response = TransactionResponseDtoFixture.build(
                 TransactionType.INCOME,
+                TransactionStatus.COMPLETED,
                 "Pagamento",
                 new java.math.BigDecimal("2500.00"),
                 date,
@@ -89,9 +92,11 @@ public class TransactionControllerTest {
                 dueDate.plusDays(5)
         );
 
-        responsePage = new PageImpl<>(
+        responsePage = new TransactionPageResponseDto<TransactionResponseDto>(
                 List.of(response),
-                PageRequest.of(0, 15),
+                0,
+                15,
+                1,
                 1
         );
 
