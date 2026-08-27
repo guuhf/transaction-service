@@ -127,7 +127,7 @@ Não é necessário instalar PostgreSQL ou Mailpit manualmente.
 Clone o repositório:
 
 ```bash
-git clone <URL_DO_REPOSITORIO>
+git clone <https://github.com/guuhf/transaction-service.git>
 ```
 
 Entre na pasta do projeto:
@@ -248,24 +248,23 @@ Através do Swagger é possível visualizar os endpoints disponíveis, contratos
 
 ## Endpoints Principais
 
-| Método | Endpoint               | Descrição                           |
-| ------ | ---------------------- | ----------------------------------- |
-| POST   | `/auth/register`       | Registra um novo usuário            |
-| POST   | `/auth/login`          | Autentica o usuário                 |
-| POST   | `/auth/refresh-token`  | Gera um novo Access Token           |
-| POST   | `/categories`          | Cria uma categoria                  |
-| GET    | `/categories`          | Lista as categorias do usuário      |
-| POST   | `/transactions`        | Registra uma nova transação         |
-| GET    | `/transactions`        | Lista transações utilizando filtros |
-| GET    | `/transactions/report` | Gera um relatório financeiro        |
-
+| Método | Endpoint                 | Descrição                                         |
+| ------ |--------------------------|---------------------------------------------------|
+| POST   | `/auth`                  | Registra um novo usuário                          |
+| POST   | `/auth/login`            | Autentica o usuário                               |
+| POST   | `/auth/refresh-token`    | Gera um novo Access Token                         |
+| POST   | `/transactions/category` | Cria uma categoria                                |
+| GET    | `/transactions/category` | Lista as categorias do usuário                    |
+| POST   | `/transactions`          | Registra uma nova transação                       |
+| GET    | `/transactions`          | Lista transações utilizando filtros               |
+| GET    | `/transactions/report`   | Gera um relatório financeiro<br/>e envia no email |
 A documentação completa dos endpoints, parâmetros, DTOs e respostas está disponível através do Swagger.
 
 ## Fluxo de Demonstração
 
 1. Subir o ambiente com Docker Compose.
 2. Aguardar a inicialização da aplicação e execução das migrations pelo Flyway.
-3. Registrar um usuário através de `/auth/register`.
+3. Registrar um usuário através de `/auth`.
 4. Realizar login através de `/auth/login`.
 5. Copiar o Access Token retornado.
 6. Autorizar as requisições utilizando o JWT.
