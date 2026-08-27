@@ -58,6 +58,7 @@ public class TransactionMapperTest {
 
         transaction1 = Transaction.builder()
                 .transactionType(TransactionType.INCOME)
+                .transactionStatus(TransactionStatus.COMPLETED)
                 .description("teste")
                 .amount(new BigDecimal(100))
                 .date(date)
@@ -67,6 +68,7 @@ public class TransactionMapperTest {
 
         transaction2 = Transaction.builder()
                 .transactionType(TransactionType.EXPENSE)
+                .transactionStatus(TransactionStatus.COMPLETED)
                 .description("teste")
                 .amount(new BigDecimal(100))
                 .date(date)
