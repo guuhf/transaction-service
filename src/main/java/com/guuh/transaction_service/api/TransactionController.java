@@ -54,6 +54,7 @@ public class TransactionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Transação cancelada"),
             @ApiResponse(responseCode = "404", description = "Transação não encontrada!"),
+            @ApiResponse(responseCode = "400", description = "Essa transação já foi cancelada."),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
     public ResponseEntity<TransactionResponseDto> cancelTransaction(@PathVariable Long id){
