@@ -248,16 +248,18 @@ Através do Swagger é possível visualizar os endpoints disponíveis, contratos
 
 ## Endpoints Principais
 
-| Método | Endpoint                 | Descrição                                         |
-| ------ |--------------------------|---------------------------------------------------|
-| POST   | `/auth`                  | Registra um novo usuário                          |
-| POST   | `/auth/login`            | Autentica o usuário                               |
-| POST   | `/auth/refresh-token`    | Gera um novo Access Token                         |
-| POST   | `/transactions/category` | Cria uma categoria                                |
-| GET    | `/transactions/category` | Lista as categorias do usuário                    |
-| POST   | `/transactions`          | Registra uma nova transação                       |
-| GET    | `/transactions`          | Lista transações utilizando filtros               |
-| GET    | `/transactions/report`   | Gera um relatório financeiro<br/>e envia no email |
+| Método | Endpoint                 | Descrição                                     |
+| ------ |--------------------------|-----------------------------------------------|
+| POST   | `/auth`                  | Registra um novo usuário                      |
+| POST   | `/auth/login`            | Autentica o usuário                           |
+| POST   | `/auth/refresh-token`    | Gera um novo Access Token                     |
+| POST   | `/transactions/category` | Cria uma categoria                            |
+| GET    | `/transactions/category` | Lista as categorias do usuário                |
+| POST   | `/transactions`          | Registra uma nova transação                   |
+| GET    | `/transactions`          | Lista transações utilizando filtros           |
+| GET    | `/transactions/report`   | Gera um relatório financeiro e envia no email |
+| ------ |--------------------------|-----------------------------------------------|                                                                
+
 A documentação completa dos endpoints, parâmetros, DTOs e respostas está disponível através do Swagger.
 
 ## Fluxo de Demonstração
