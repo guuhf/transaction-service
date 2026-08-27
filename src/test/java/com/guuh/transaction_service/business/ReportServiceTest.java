@@ -169,7 +169,8 @@ public class ReportServiceTest {
 
     @Test
     void shouldGenerateMonthlyReportSuccessfully() {
-        when(transactionRepository.findByUserIdAndDateBetweenAndTransactionStatus(eq(1L), any(LocalDateTime.class), any(LocalDateTime.class), TransactionStatus.COMPLETED))
+        when(transactionRepository.findByUserIdAndDateBetweenAndTransactionStatus(
+                eq(1L), any(LocalDateTime.class), any(LocalDateTime.class), eq(TransactionStatus.COMPLETED)))
                 .thenReturn(list);
 
         ReportResponseDto actual = reportService.generateMonthlyReport(1L);
@@ -182,7 +183,8 @@ public class ReportServiceTest {
 
         assertEquals(actual.finalDate().minusMonths(1), actual.initialDate());
 
-        verify(transactionRepository).findByUserIdAndDateBetweenAndTransactionStatus(eq(1L), any(LocalDateTime.class), any(LocalDateTime.class), TransactionStatus.COMPLETED);
+        verify(transactionRepository).findByUserIdAndDateBetweenAndTransactionStatus
+                (eq(1L), any(LocalDateTime.class), any(LocalDateTime.class), eq(TransactionStatus.COMPLETED));
     }
 
     @Test
