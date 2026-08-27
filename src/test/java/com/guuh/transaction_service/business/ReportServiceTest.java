@@ -3,6 +3,7 @@ package com.guuh.transaction_service.business;
 import com.guuh.transaction_service.api.dto.response.CategoryReportResponseDtoFixture;
 import com.guuh.transaction_service.api.dto.response.ReportResponseDto;
 import com.guuh.transaction_service.api.dto.response.ReportResponseDtoFixture;
+import com.guuh.transaction_service.infrastructure.client.NotificationClient;
 import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.entity.User;
@@ -51,6 +52,8 @@ public class ReportServiceTest {
     private ReportResponseDto response;
     @Mock
     private User user;
+    @Mock
+    private NotificationClient notificationClient;
     private LocalDateTime initialDate;
     private LocalDateTime finalDate;
 
