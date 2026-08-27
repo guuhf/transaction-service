@@ -8,14 +8,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record TransactionRequestDto(
-        @NotNull
+        @NotNull(message = "Tipo de transação é obrigatório!")
         TransactionType transactionType,
-        @NotBlank
+        @NotBlank(message = "Descrição é obrigatório!")
         String description,
-        @NotNull
+        @NotNull(message = "Valor é obrigatório!")
         BigDecimal amount,
         LocalDateTime dueDate,
-        @NotNull
+        @NotNull(message = "Categoria é obrigatória")
         Long categoryId
 ) {
 }

@@ -1,12 +1,12 @@
 package com.guuh.transaction_service.api;
 
 
-import com.guuh.transaction_service.business.AuthService;
 import com.guuh.transaction_service.api.dto.request.LoginRequestDto;
 import com.guuh.transaction_service.api.dto.request.RefreshTokenRequestDto;
 import com.guuh.transaction_service.api.dto.request.RegisterRequestDto;
 import com.guuh.transaction_service.api.dto.response.LoginResponseDto;
 import com.guuh.transaction_service.api.dto.response.UserResponseDto;
+import com.guuh.transaction_service.business.AuthService;
 import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -61,7 +61,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Token inválido"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<LoginResponseDto> refreshTokenLogin(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) throws NoSuchAlgorithmException{
+    public ResponseEntity<LoginResponseDto> refreshTokenLogin(@RequestBody @Valid RefreshTokenRequestDto refreshTokenRequestDto) throws NoSuchAlgorithmException{
         return ResponseEntity.status(200).body(authService.refreshTokenLogin(refreshTokenRequestDto));
     }
 }

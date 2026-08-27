@@ -4,7 +4,7 @@ import com.guuh.transaction_service.api.dto.response.CategoryReportResponseDto;
 import com.guuh.transaction_service.api.dto.response.ReportResponseDto;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
-import com.guuh.transaction_service.infrastructure.exceptions.DateLimitException;
+import com.guuh.transaction_service.infrastructure.exceptions.InvalidDatesException;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -60,8 +63,8 @@ public class ReportService {
     public void checkDate(LocalDateTime initialDate,
                           LocalDateTime finalDate) {
         long period = ChronoUnit.DAYS.between(initialDate, finalDate);
-        if (period > 90) {
-            throw new DateLimitException("O periodo de datas ultrapassa o limite de 90 dias.");
+        if (period > 90 || initialDate.isAfter(finalDate)) {
+            throw new InvalidDatesException("Periodo de datas inválidos.");
         }
     }
 

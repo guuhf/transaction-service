@@ -1,4 +1,9 @@
 package com.guuh.transaction_service.api.dto.request;
 
-public record RefreshTokenRequestDto(String refreshToken) {
+import jakarta.validation.constraints.NotBlank;
+
+public record RefreshTokenRequestDto(
+        @NotBlank(message = "Refresh Token é obrigatório!")
+        String refreshToken
+) {
 }
