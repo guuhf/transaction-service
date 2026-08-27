@@ -7,6 +7,7 @@ import com.guuh.transaction_service.infrastructure.client.NotificationClient;
 import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.entity.User;
+import com.guuh.transaction_service.infrastructure.enums.TransactionStatus;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import com.guuh.transaction_service.infrastructure.exceptions.InvalidDatesException;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
@@ -159,7 +160,7 @@ public class ReportServiceTest {
     void shouldGenerateReportSucessfully() {
         when(userService.getLoggedUser()).thenReturn(user);
         reportService.checkDate(initialDate, finalDate);
-        when(transactionRepository.findByUserIdAndDateBetween(user.getId(), initialDate, finalDate))
+        when(transactionRepository.findByUserIdAndDateBetweenAndTransactionStatus(user.getId(), initialDate, finalDate, TransactionStatus.COMPLETED))
                 .thenReturn(list);
 
         ReportResponseDto actual = reportService.generateReport(initialDate, finalDate);
@@ -168,7 +169,8 @@ public class ReportServiceTest {
 
     @Test
     void shouldGenerateMonthlyReportSuccessfully() {
-        when(transactionRepository.findByUserIdAndDateBetween(eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
+        when(transactionRepository.findByUserIdAndDateBetweenAndTransactionStatus(
+                eq(1L), any(LocalDateTime.class), any(LocalDateTime.class), eq(TransactionStatus.COMPLETED)))
                 .thenReturn(list);
 
         ReportResponseDto actual = reportService.generateMonthlyReport(1L);
@@ -181,7 +183,8 @@ public class ReportServiceTest {
 
         assertEquals(actual.finalDate().minusMonths(1), actual.initialDate());
 
-        verify(transactionRepository).findByUserIdAndDateBetween(eq(1L), any(LocalDateTime.class), any(LocalDateTime.class));
+        verify(transactionRepository).findByUserIdAndDateBetweenAndTransactionStatus
+                (eq(1L), any(LocalDateTime.class), any(LocalDateTime.class), eq(TransactionStatus.COMPLETED));
     }
 
     @Test
