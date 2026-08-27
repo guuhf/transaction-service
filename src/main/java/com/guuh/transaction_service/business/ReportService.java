@@ -2,6 +2,7 @@ package com.guuh.transaction_service.business;
 
 import com.guuh.transaction_service.api.dto.response.CategoryReportResponseDto;
 import com.guuh.transaction_service.api.dto.response.ReportResponseDto;
+import com.guuh.transaction_service.infrastructure.client.NotificationClient;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import com.guuh.transaction_service.infrastructure.exceptions.InvalidDatesException;
@@ -22,12 +23,16 @@ import java.util.Map;
 public class ReportService {
     private final TransactionRepository transactionRepository;
     private final UserService userService;
+    private final NotificationClient notificationClient;
 
     public ReportResponseDto generateReport(LocalDateTime initialDate,
                                             LocalDateTime finalDate) {
         Long userId = userService.getLoggedUser().getId();
 
-        return buildReport(userId, initialDate, finalDate);
+        ReportResponseDto report = buildReport(userId, initialDate, finalDate);
+        notificationClient.sendEmail(report, userService.getLoggedUser().getEmail());
+
+        return report;
     }
 
     public ReportResponseDto generateMonthlyReport(Long userId) {
