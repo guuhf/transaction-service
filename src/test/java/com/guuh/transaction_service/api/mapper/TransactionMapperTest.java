@@ -1,19 +1,20 @@
 package com.guuh.transaction_service.api.mapper;
 
 import com.guuh.transaction_service.api.dto.request.TransactionRequestDto;
+import com.guuh.transaction_service.api.dto.response.TransactionPageResponseDto;
 import com.guuh.transaction_service.api.dto.response.TransactionResponseDto;
-import com.guuh.transaction_service.api.mapper.TransactionMapper;
 import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.entity.User;
+import com.guuh.transaction_service.infrastructure.enums.TransactionStatus;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -75,6 +76,7 @@ public class TransactionMapperTest {
 
         response = new TransactionResponseDto(
                 TransactionType.INCOME,
+                TransactionStatus.COMPLETED,
                 "teste",
                 new BigDecimal(100),
                 date,
@@ -95,6 +97,7 @@ public class TransactionMapperTest {
         dtoList = List.of(
                 new TransactionResponseDto(
                         TransactionType.INCOME,
+                        TransactionStatus.COMPLETED,
                         "teste",
                         new BigDecimal(100),
                         date,
@@ -105,6 +108,7 @@ public class TransactionMapperTest {
 
                 new TransactionResponseDto(
                         TransactionType.EXPENSE,
+                        TransactionStatus.COMPLETED,
                         "teste",
                         new BigDecimal(100),
                         date,
@@ -147,13 +151,13 @@ public class TransactionMapperTest {
 
     @Test
     void shouldMapTransactionPageToResponseDtoPage(){
-        Page<TransactionResponseDto> actual = mapper.toResponseDtoPage(transactionPage);
+        TransactionPageResponseDto<TransactionResponseDto> actual = mapper.toResponseDtoPage(transactionPage);
         assertAll(
-                () -> assertEquals(dtoList, actual.getContent()),
-                () -> assertEquals(pageable, actual.getPageable()),
-                () -> assertEquals(2, actual.getTotalElements()),
-                () -> assertEquals(0, actual.getNumber()),
-                () -> assertEquals(10, actual.getSize())
+                () -> assertEquals(dtoList, actual.content()),
+                () -> assertEquals(0, actual.page()),
+                () -> assertEquals(2, actual.totalElements()),
+                () -> assertEquals(0, actual.page()),
+                () -> assertEquals(10, actual.size())
         );
     }
 }

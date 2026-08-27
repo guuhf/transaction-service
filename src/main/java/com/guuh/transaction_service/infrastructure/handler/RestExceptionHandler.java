@@ -80,6 +80,18 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
     }
 
+    @ExceptionHandler(TransactionNotFoundException.class)
+    private ResponseEntity<RestErrorMessage> transactionNotFoundHandler(TransactionNotFoundException e) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.NOT_FOUND, e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(threatResponse);
+    }
+
+    @ExceptionHandler(TransactionIsAlreadyCanceledException.class)
+    private ResponseEntity<RestErrorMessage> transactionIsAlreadyCanceled(TransactionIsAlreadyCanceledException e) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RestErrorMessage> handleValidationException(
             MethodArgumentNotValidException exception
