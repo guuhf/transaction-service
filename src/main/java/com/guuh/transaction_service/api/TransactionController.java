@@ -2,6 +2,7 @@ package com.guuh.transaction_service.api;
 
 import com.guuh.transaction_service.api.dto.request.FilterRequestDto;
 import com.guuh.transaction_service.api.dto.request.TransactionRequestDto;
+import com.guuh.transaction_service.api.dto.response.TransactionPageResponseDto;
 import com.guuh.transaction_service.api.dto.response.TransactionResponseDto;
 import com.guuh.transaction_service.business.TransactionService;
 import com.guuh.transaction_service.infrastructure.configs.AuthorizationConfig;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,9 +44,21 @@ public class TransactionController {
             @ApiResponse(responseCode = "200", description = "Transações listadas"),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
-    public ResponseEntity<Page<TransactionResponseDto>> getTransactions(FilterRequestDto dto,
-                                                                         @RequestParam("page") int page) {
+    public ResponseEntity<TransactionPageResponseDto<TransactionResponseDto>> getTransactions(FilterRequestDto dto,
+                                                                                              @RequestParam("page") int page) {
         return ResponseEntity.status(200).body(transactionService.findTransactions(dto, page));
+    }
+
+    @PatchMapping("/{id}/cancel")
+    @Operation(summary = "Cancela uma transação")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Transação cancelada"),
+            @ApiResponse(responseCode = "404", description = "Transação não encontrada!"),
+            @ApiResponse(responseCode = "400", description = "Essa transação já foi cancelada."),
+            @ApiResponse(responseCode = "500", description = "Erro inesperado")
+    })
+    public ResponseEntity<TransactionResponseDto> cancelTransaction(@PathVariable Long id){
+        return ResponseEntity.status(200).body(transactionService.cancelTransaction(id));
     }
 
 }

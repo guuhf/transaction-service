@@ -8,6 +8,7 @@ import com.guuh.transaction_service.infrastructure.exceptions.CategoryAlreadyExi
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
 import com.guuh.transaction_service.infrastructure.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,10 +39,15 @@ public class CategoryService {
     }
 
     public CategoryResponseDto updateCategory(CategoryRequestDto dto, Long id){
+        Long userId =  userService.getLoggedUser().getId();
+
         validateCategoryUniqueness(dto.name());
         Category category = categoryRepository.findByIdAndUserId(
-                id, userService.getLoggedUser().getId()).orElseThrow(()->
+                id, userId).orElseThrow(()->
                 new CategoryNotFoundException("Categoria não encontrada!"));
+        if (categoryRepository.existsByNameIgnoreCaseAndUserIdAndIdNot(dto.name(), userId, id)){
+            throw new CategoryAlreadyExistsException("Essa categoria ja foi registrada!");
+        }
 
         category.setName(dto.name());
         return mapper.toCategoryDto(categoryRepository.save(category));

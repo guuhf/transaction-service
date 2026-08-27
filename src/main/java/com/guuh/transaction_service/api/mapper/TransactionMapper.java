@@ -1,6 +1,7 @@
 package com.guuh.transaction_service.api.mapper;
 
 import com.guuh.transaction_service.api.dto.request.TransactionRequestDto;
+import com.guuh.transaction_service.api.dto.response.TransactionPageResponseDto;
 import com.guuh.transaction_service.api.dto.response.TransactionResponseDto;
 import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
@@ -20,6 +21,7 @@ public interface TransactionMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "date", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "transactionStatus", ignore = true)
     @Mapping(source = "categoryId", target = "category")
     Transaction toTransaction(TransactionRequestDto dto);
 
@@ -34,13 +36,15 @@ public interface TransactionMapper {
         return category;
     }
 
-    default Page<TransactionResponseDto> toResponseDtoPage(Page<Transaction> transactionPage) {
+    default TransactionPageResponseDto<TransactionResponseDto> toResponseDtoPage(Page<Transaction> transactionPage) {
         List<TransactionResponseDto> dtos = toTransactionDtoList(transactionPage.getContent());
 
-        return new PageImpl<>(
+        return new TransactionPageResponseDto<TransactionResponseDto>(
                 dtos,
-                transactionPage.getPageable(),
-                transactionPage.getTotalElements()
+                transactionPage.getPageable().getPageNumber(),
+                transactionPage.getSize(),
+                transactionPage.getTotalElements(),
+                transactionPage.getTotalPages()
         );
     }
 }

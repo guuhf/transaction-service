@@ -2,6 +2,7 @@ package com.guuh.transaction_service.infrastructure.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.guuh.transaction_service.infrastructure.enums.TransactionStatus;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,9 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type")
     private TransactionType transactionType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_status")
+    private TransactionStatus transactionStatus;
     @Column(name = "description", length = 150)
     private String description;
     @Column(name = "amount")

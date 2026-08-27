@@ -4,15 +4,18 @@ import com.guuh.transaction_service.api.dto.request.FilterRequestDto;
 import com.guuh.transaction_service.api.dto.request.FilterRequestDtoFixture;
 import com.guuh.transaction_service.api.dto.request.TransactionRequestDto;
 import com.guuh.transaction_service.api.dto.request.TransactionRequestDtoFixture;
+import com.guuh.transaction_service.api.dto.response.TransactionPageResponseDto;
 import com.guuh.transaction_service.api.dto.response.TransactionResponseDto;
 import com.guuh.transaction_service.api.dto.response.TransactionResponseDtoFixture;
 import com.guuh.transaction_service.api.mapper.TransactionMapper;
 import com.guuh.transaction_service.infrastructure.entity.Category;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
 import com.guuh.transaction_service.infrastructure.entity.User;
+import com.guuh.transaction_service.infrastructure.enums.TransactionStatus;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
 import com.guuh.transaction_service.infrastructure.exceptions.InvalidAmountException;
+import com.guuh.transaction_service.infrastructure.exceptions.TransactionIsAlreadyCanceledException;
 import com.guuh.transaction_service.infrastructure.repository.CategoryRepository;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -63,7 +67,7 @@ public class TransactionServiceTest {
     @Mock
     private Page<Transaction> transactionPage;
     @Mock
-    private Page<TransactionResponseDto> responsePage;
+    TransactionPageResponseDto<TransactionResponseDto> responsePage;
 
     @BeforeEach
     void setup() {
@@ -86,6 +90,7 @@ public class TransactionServiceTest {
         transaction = Transaction.builder()
                 .id(1L)
                 .transactionType(TransactionType.INCOME)
+                .transactionStatus(TransactionStatus.COMPLETED)
                 .description("Pagamento")
                 .amount(new BigDecimal("2500.00"))
                 .date(date)
@@ -103,6 +108,7 @@ public class TransactionServiceTest {
 
         response = TransactionResponseDtoFixture.build(
                 TransactionType.INCOME,
+                TransactionStatus.COMPLETED,
                 "Pagamento",
                 new BigDecimal("2500.00"),
                 date,
@@ -126,9 +132,11 @@ public class TransactionServiceTest {
                 1
         );
 
-        responsePage = new PageImpl<>(
+        responsePage = new TransactionPageResponseDto<TransactionResponseDto>(
                 List.of(response),
-                PageRequest.of(0, 15),
+                0,
+                15,
+                1,
                 1
         );
     }
@@ -185,7 +193,7 @@ public class TransactionServiceTest {
         )).thenReturn(transactionPage);
         when(mapper.toResponseDtoPage(transactionPage)).thenReturn(responsePage);
 
-        Page<TransactionResponseDto> actual = transactionService.findTransactions(filterRequest, 0);
+        TransactionPageResponseDto<TransactionResponseDto> actual = transactionService.findTransactions(filterRequest, 0);
 
         assertEquals(responsePage, actual);
         verify(transactionRepository).findWithFilter(
@@ -199,5 +207,26 @@ public class TransactionServiceTest {
                 PageRequest.of(0, 15)
         );
         verify(mapper).toResponseDtoPage(transactionPage);
+    }
+
+    @Test
+    void shouldCancelTransactionSucessfully(){
+        when(transactionRepository.findTransactionById(1L)).thenReturn(Optional.of(transaction));
+        when(transactionRepository.save(transaction)).thenReturn(transaction);
+        when(mapper.toTransactionDto(transaction)).thenReturn(response);
+
+        TransactionResponseDto actual = transactionService.cancelTransaction(1L);
+        assertEquals(TransactionStatus.COMPLETED, actual.transactionStatus());
+    }
+
+    @Test
+    void shouldThrowWhenTransactionIsAlreadyCancelled(){
+        TransactionIsAlreadyCanceledException exception = assertThrows(
+                TransactionIsAlreadyCanceledException.class,
+                () -> transactionService.checkStatus(TransactionStatus.CANCELED)
+        );
+
+        assertEquals("Essa transação já foi cancelada.", exception.getMessage());
+
     }
 }

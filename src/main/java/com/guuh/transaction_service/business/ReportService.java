@@ -4,6 +4,7 @@ import com.guuh.transaction_service.api.dto.response.CategoryReportResponseDto;
 import com.guuh.transaction_service.api.dto.response.ReportResponseDto;
 import com.guuh.transaction_service.infrastructure.client.NotificationClient;
 import com.guuh.transaction_service.infrastructure.entity.Transaction;
+import com.guuh.transaction_service.infrastructure.enums.TransactionStatus;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import com.guuh.transaction_service.infrastructure.exceptions.InvalidDatesException;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
@@ -47,7 +48,7 @@ public class ReportService {
                                           LocalDateTime finalDate) {
         checkDate(initialDate, finalDate);
 
-        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(userId, initialDate, finalDate);
+        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetweenAndTransactionStatus(userId, initialDate, finalDate, TransactionStatus.COMPLETED);
 
         BigDecimal totalIncome = calculateTransactionTypeTotal(transactions, TransactionType.INCOME);
         BigDecimal totalExpense = calculateTransactionTypeTotal(transactions, TransactionType.EXPENSE);

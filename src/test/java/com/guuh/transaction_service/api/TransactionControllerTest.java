@@ -4,12 +4,15 @@ import com.guuh.transaction_service.api.dto.request.FilterRequestDto;
 import com.guuh.transaction_service.api.dto.request.FilterRequestDtoFixture;
 import com.guuh.transaction_service.api.dto.request.TransactionRequestDto;
 import com.guuh.transaction_service.api.dto.request.TransactionRequestDtoFixture;
+import com.guuh.transaction_service.api.dto.response.TransactionPageResponseDto;
 import com.guuh.transaction_service.api.dto.response.TransactionResponseDto;
 import com.guuh.transaction_service.api.dto.response.TransactionResponseDtoFixture;
 import com.guuh.transaction_service.business.TransactionService;
+import com.guuh.transaction_service.infrastructure.enums.TransactionStatus;
 import com.guuh.transaction_service.infrastructure.enums.TransactionType;
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
 import com.guuh.transaction_service.infrastructure.exceptions.InvalidAmountException;
+import com.guuh.transaction_service.infrastructure.exceptions.TransactionIsAlreadyCanceledException;
 import com.guuh.transaction_service.infrastructure.handler.RestExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +32,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -44,7 +46,7 @@ public class TransactionControllerTest {
     private TransactionRequestDto request;
     private TransactionResponseDto response;
     private FilterRequestDto filterRequest;
-    private Page<TransactionResponseDto> responsePage;
+    private TransactionPageResponseDto<TransactionResponseDto>responsePage;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private MockMvc mockMvc;
     private String url;
@@ -72,6 +74,7 @@ public class TransactionControllerTest {
 
         response = TransactionResponseDtoFixture.build(
                 TransactionType.INCOME,
+                TransactionStatus.COMPLETED,
                 "Pagamento",
                 new java.math.BigDecimal("2500.00"),
                 date,
@@ -89,9 +92,11 @@ public class TransactionControllerTest {
                 dueDate.plusDays(5)
         );
 
-        responsePage = new PageImpl<>(
+        responsePage = new TransactionPageResponseDto<TransactionResponseDto>(
                 List.of(response),
-                PageRequest.of(0, 15),
+                0,
+                15,
+                1,
                 1
         );
 
@@ -197,4 +202,32 @@ public class TransactionControllerTest {
 
         verifyNoInteractions(transactionService);
     }
+
+    @Test
+    void shouldCancelTransactionSucessfully() throws Exception {
+        when(transactionService.cancelTransaction(1L)).thenReturn(response);
+
+        mockMvc.perform(patch("/transactions/1/cancel"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.transactionType").value(response.transactionType().toString()))
+                .andExpect(jsonPath("$.transactionStatus").value(response.transactionStatus().toString()))
+                .andExpect(jsonPath("$.description").value(response.description()))
+                .andExpect(jsonPath("$.amount").value(response.amount().doubleValue()))
+                .andExpect(jsonPath("$.categoryId").value(response.categoryId()))
+                .andExpect(jsonPath("$.categoryName").value(response.categoryName()));
+
+        verify(transactionService).cancelTransaction(1L);
+    }
+
+    @Test
+    void shouldReturnBadRequest() throws Exception {
+        when(transactionService.cancelTransaction(1L))
+                .thenThrow(new TransactionIsAlreadyCanceledException("Essa transação já foi cancelada."));
+
+        mockMvc.perform(patch("/transactions/1/cancel"))
+                .andExpect(status().isBadRequest());
+
+        verify(transactionService).cancelTransaction(1L);
+    }
+
 }

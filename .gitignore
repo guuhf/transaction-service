@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 *.yaml
 .env
-.log
+*.log
 
 
 ### STS ###
