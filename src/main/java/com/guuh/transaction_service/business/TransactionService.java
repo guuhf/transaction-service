@@ -15,8 +15,6 @@ import com.guuh.transaction_service.infrastructure.exceptions.TransactionNotFoun
 import com.guuh.transaction_service.infrastructure.repository.CategoryRepository;
 import com.guuh.transaction_service.infrastructure.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Not;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 

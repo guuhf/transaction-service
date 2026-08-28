@@ -8,7 +8,6 @@ import com.guuh.transaction_service.infrastructure.exceptions.CategoryAlreadyExi
 import com.guuh.transaction_service.infrastructure.exceptions.CategoryNotFoundException;
 import com.guuh.transaction_service.infrastructure.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
