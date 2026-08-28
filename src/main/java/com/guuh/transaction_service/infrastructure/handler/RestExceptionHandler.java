@@ -69,9 +69,9 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(InvalidDatesException.class)
-    private ResponseEntity<RestErrorMessage> dateLimitHandler(InvalidDatesException e) {
-        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.CONFLICT, e.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(threatResponse);
+    private ResponseEntity<RestErrorMessage> invalidDatesHandler(InvalidDatesException e) {
+        RestErrorMessage threatResponse = new RestErrorMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)

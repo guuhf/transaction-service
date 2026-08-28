@@ -55,7 +55,6 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/auth/refresh-token").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/user").permitAll()
 
                         // Rotas protegidas
                         .requestMatchers("/user/**").authenticated()

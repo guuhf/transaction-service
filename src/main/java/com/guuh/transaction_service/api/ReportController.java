@@ -30,6 +30,7 @@ public class ReportController {
     @Operation(summary = "Fazer um relatório")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Relatório criado"),
+            @ApiResponse(responseCode = "400", description = "Periodo de datas é inválido."),
             @ApiResponse(responseCode = "500", description = "Erro inesperado")
     })
     public ResponseEntity<ReportResponseDto> generateReport(@RequestParam("initialDate")LocalDateTime initialDate,
