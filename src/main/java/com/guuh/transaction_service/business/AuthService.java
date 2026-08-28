@@ -13,7 +13,6 @@ import com.guuh.transaction_service.infrastructure.exceptions.UnauthorizedTokenE
 import com.guuh.transaction_service.infrastructure.repository.RefreshTokenRepository;
 import com.guuh.transaction_service.infrastructure.repository.UserRepository;
 import com.guuh.transaction_service.infrastructure.security.JwtUtil;
-import com.guuh.transaction_service.infrastructure.security.UserDetailsServiceImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
