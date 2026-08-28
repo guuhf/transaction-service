@@ -380,10 +380,6 @@ A collection utiliza variáveis para evitar copiar valores manualmente:
 
 Ao executar **Login**, a collection salva automaticamente `accessToken` e `refreshToken`.
 
-Ao executar **Create Category**, a collection salva automaticamente o ID retornado em `categoryId`.
-
-> Atualmente o `TransactionResponseDto` não retorna o ID da transação. Por isso, para testar `Cancel Transaction`, informe manualmente a variável `transactionId` na collection.
-
 ## Endpoints principais
 
 ### Autenticação
