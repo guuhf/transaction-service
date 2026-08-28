@@ -1,46 +1,72 @@
 # Personal Finance API
 
-API REST para controle financeiro pessoal, com autenticação JWT, gerenciamento de categorias, registro de transações, geração de relatórios financeiros e envio de notificações por email.
+API REST para controle financeiro desenvolvida com **Java 17 e Spring Boot**, com autenticação JWT, gerenciamento de categorias, registro e cancelamento de transações, relatórios financeiros e envio de notificações por email.
 
-O projeto utiliza um serviço principal responsável pelas operações financeiras e um serviço separado para notificações, com ambiente local executável através do Docker Compose.
+O projeto utiliza um serviço principal para as operações financeiras e um serviço separado para notificações, com ambiente local reproduzível através do Docker Compose.
 
 ## Funcionalidades
 
-* Cadastro e autenticação de usuários com JWT
-* Renovação de autenticação com Refresh Token
-* CRUD de categorias
-* Registro de receitas, despesas e saldo inicial
-* Filtros de transações por categoria, tipo e período
-* Geração de relatórios financeiros por intervalo de datas
-* Envio de relatórios por email
-* Rate Limiting com Bucket4j
-* Suporte a Rate Limiting distribuído através do Hazelcast
-* Comunicação entre serviços com OpenFeign
-* Versionamento e execução de migrações do banco de dados com Flyway
-* Ambiente local com PostgreSQL e Mailpit
-* Documentação da API com Swagger/OpenAPI
-* Ambiente reproduzível com Docker Compose
-* Integração contínua com GitHub Actions
+- Cadastro e autenticação de usuários com JWT
+- Renovação de autenticação com Refresh Token
+- CRUD de categorias
+- Registro de receitas, despesas e saldo inicial
+- Cancelamento lógico de transações
+- Status de transações (`COMPLETED` e `CANCELED`)
+- Filtros por categoria, tipo, período e vencimento
+- Paginação de transações
+- Relatórios financeiros por intervalo de datas
+- Relatórios considerando apenas transações concluídas
+- Envio de relatórios por email
+- Envio mensal automático de relatórios
+- Rate Limiting com Bucket4j
+- Estado compartilhado do Rate Limiting com Hazelcast
+- Comunicação entre serviços com OpenFeign
+- Versionamento do banco de dados com Flyway
+- Índices para otimização das principais consultas
+- Documentação com Swagger/OpenAPI
+- Collection do Postman para demonstração da API
+- Testes automatizados
+- Ambiente reproduzível com Docker Compose
+- Integração contínua com GitHub Actions
 
 ## Tecnologias
 
-* Java 17
-* Spring Boot
-* Spring Security
-* Spring Data JPA
-* PostgreSQL
-* Flyway
-* JWT
-* OpenFeign
-* MapStruct
-* Bucket4j
-* Hazelcast
-* Docker
-* Docker Compose
-* Mailpit
-* Gradle
-* GitHub Actions
-* Swagger / OpenAPI
+### Back-end
+
+- Java 17
+- Spring Boot
+- Spring Web MVC
+- Spring Security
+- Spring Data JPA
+- Spring Cache
+- Spring Cloud OpenFeign
+
+### Banco de dados
+
+- PostgreSQL
+- Flyway
+
+### Segurança e infraestrutura
+
+- JWT
+- Refresh Token
+- Bucket4j
+- Hazelcast
+- Docker
+- Docker Compose
+- Mailpit
+
+### Desenvolvimento e testes
+
+- Gradle
+- MapStruct
+- Lombok
+- Swagger / OpenAPI
+- Postman
+- JUnit 5
+- Mockito
+- MockMvc
+- GitHub Actions
 
 ## Arquitetura
 
@@ -53,90 +79,45 @@ O projeto utiliza um serviço principal responsável pelas operações financeir
                   ┌─────────────────────┐
                   │ Transaction Service │
                   └───────┬──────┬──────┘
+                          │      │
                           │      │ OpenFeign
                           │      ▼
-                          │  ┌──────────────────────────┐
-                          │  │ Notification Service     │
-                          │  └────────────┬─────────────┘
-                          │               │ SMTP
-                          ▼               ▼
-                   ┌────────────┐    ┌─────────┐
-                   │ PostgreSQL │    │ Mailpit │
-                   └────────────┘    └─────────┘
+                          │  ┌──────────────────────┐
+                          │  │ Notification Service │
+                          │  └──────────┬───────────┘
+                          │             │ SMTP
+                          ▼             ▼
+                   ┌────────────┐   ┌─────────┐
+                   │ PostgreSQL │   │ Mailpit │
+                   └────────────┘   └─────────┘
 ```
 
-O **Transaction Service** concentra as regras relacionadas a usuários, categorias, transações e relatórios financeiros.
+O **Transaction Service** concentra as regras relacionadas a usuários, autenticação, categorias, transações e relatórios.
 
-O envio de emails é delegado ao **Transaction Notification Service**, com comunicação HTTP realizada através do **OpenFeign**.
+O envio de emails é delegado ao **Transaction Notification Service** através de requisições HTTP utilizando OpenFeign.
 
-Durante o desenvolvimento local, o serviço de notificações envia os emails para o **Mailpit**, permitindo testar o fluxo sem utilizar um provedor de email real.
-
-A estrutura do banco de dados é gerenciada pelo **Flyway**, responsável por aplicar e versionar as migrations do PostgreSQL.
-
-## Rate Limiting
-
-A API possui controle de limite de requisições utilizando **Bucket4j**.
-
-O Bucket4j controla a quantidade de requisições permitidas dentro de determinado intervalo de tempo, ajudando a proteger os endpoints contra abuso e excesso de chamadas.
-
-O projeto também utiliza **Hazelcast** como armazenamento compartilhado para o estado do Rate Limiting.
-
-Atualmente, o projeto não depende de múltiplas instâncias do Transaction Service e, portanto, o Rate Limiting poderia funcionar apenas com armazenamento em memória local.
-
-A integração com Hazelcast foi adicionada para tornar a implementação compatível com um cenário de **escalabilidade horizontal**.
-
-Caso o Transaction Service seja executado em múltiplas instâncias, todas podem compartilhar o mesmo estado do Rate Limiting:
-
-```text
-                    ┌───────────────┐
-                    │    Client     │
-                    └───────┬───────┘
-                            │
-                    ┌───────▼───────┐
-                    │ Load Balancer │
-                    └───┬───────┬───┘
-                        │       │
-              ┌─────────▼─┐   ┌─▼─────────┐
-              │ Instance 1│   │ Instance 2│
-              │ Bucket4j  │   │ Bucket4j  │
-              └─────┬─────┘   └─────┬─────┘
-                    │               │
-                    └───────┬───────┘
-                            ▼
-                      ┌───────────┐
-                      │ Hazelcast │
-                      └───────────┘
-```
-
-Sem um armazenamento compartilhado, cada instância manteria seu próprio contador de requisições.
-
-Com Hazelcast, o estado pode ser compartilhado entre as instâncias, mantendo o limite consistente mesmo após uma eventual escalabilidade horizontal da aplicação.
+Durante o desenvolvimento local, os emails são enviados para o **Mailpit**, permitindo testar o fluxo sem utilizar um provedor SMTP externo.
 
 ## Pré-requisitos
 
-Para executar o projeto utilizando Docker Compose, é necessário ter instalado:
+Para executar o projeto com Docker Compose:
 
-* Git
-* Docker
-* Docker Compose
+- Git
+- Docker
+- Docker Compose
 
 Não é necessário instalar PostgreSQL ou Mailpit manualmente.
 
-## Como Rodar
+## Como executar
 
 Clone o repositório:
 
 ```bash
-git clone <https://github.com/guuhf/transaction-service.git>
-```
-
-Entre na pasta do projeto:
-
-```bash
+git clone https://github.com/guuhf/transaction-service.git
 cd transaction-service
 ```
 
-Crie o arquivo `.env` utilizando o arquivo de exemplo.
+Crie o arquivo `.env` a partir do exemplo.
 
 ### Windows
 
@@ -150,35 +131,33 @@ copy .env.example .env
 cp .env.example .env
 ```
 
-Suba os containers:
+Suba o ambiente:
 
 ```bash
 docker compose up -d --build
 ```
 
-Ao iniciar a aplicação, o **Flyway** verifica o histórico de migrations e executa automaticamente aquelas que ainda não foram aplicadas, preparando a estrutura necessária no PostgreSQL.
-
-Para verificar os containers em execução:
+Verifique os containers:
 
 ```bash
 docker compose ps
 ```
 
-A API ficará disponível em:
+API:
 
 ```text
 http://localhost:8084
 ```
 
-O Mailpit ficará disponível em:
+Mailpit:
 
 ```text
 http://localhost:8025
 ```
 
-## Variáveis de Ambiente
+## Variáveis de ambiente
 
-Exemplo de configuração do arquivo `.env`:
+Exemplo:
 
 ```env
 DB_NAME=db_transactions
@@ -191,222 +170,348 @@ EMAIL_FROM=no-reply@transaction-service.local
 EMAIL_PERSONAL_NAME=Transaction Service
 ```
 
-> Os valores apresentados são destinados ao ambiente local de desenvolvimento. Credenciais e chaves utilizadas em produção não devem ser armazenadas diretamente no repositório.
-
-## Migrações do Banco de Dados
-
-As alterações estruturais do banco de dados são gerenciadas através do **Flyway**.
-
-As migrations ficam versionadas junto ao código-fonte e são executadas em ordem durante a inicialização da aplicação.
-
-Exemplo de estrutura:
-
-```text
-src/main/resources/db/migration
-├── V1__create_users.sql
-├── V2__create_categories.sql
-└── V3__create_transactions.sql
-```
-
-Cada nova alteração no schema deve ser adicionada através de uma nova migration, evitando alterações manuais na estrutura do banco.
+> Os valores acima são destinados ao ambiente local. Credenciais e chaves reais não devem ser armazenadas no repositório.
 
 ## Autenticação
 
-A API utiliza **JWT (JSON Web Token)** para autenticação.
+A API utiliza JWT para autenticação.
 
-O fluxo básico consiste em:
+Fluxo:
 
-1. Registrar um usuário.
-2. Realizar login.
-3. Receber um Access Token e um Refresh Token.
-4. Utilizar o Access Token nos endpoints protegidos.
-5. Utilizar o Refresh Token para obter um novo Access Token quando necessário.
+```text
+Cadastro
+   ↓
+Login
+   ↓
+Access Token + Refresh Token
+   ↓
+Access Token nas requisições protegidas
+   ↓
+Access Token expira
+   ↓
+Refresh Token
+   ↓
+Novo Access Token
+```
 
-Exemplo de autenticação:
+Endpoints protegidos devem receber:
 
 ```http
 Authorization: Bearer <access_token>
 ```
 
-Quando o Access Token expirar, o endpoint:
+Para renovar o Access Token:
 
 ```http
 POST /auth/refresh-token
 ```
 
-pode ser utilizado para gerar um novo token sem exigir um novo login.
+## Transações
 
-## Swagger
+A API suporta:
 
-Com a aplicação em execução, a documentação interativa da API pode ser acessada em:
+- `INCOME`
+- `EXPENSE`
+- `OPENINGBALANCE`
+
+Toda nova transação é criada com status:
+
+```text
+COMPLETED
+```
+
+Uma transação pode ser cancelada:
+
+```text
+COMPLETED
+    │
+    │ PATCH /transactions/{id}/cancel
+    ▼
+CANCELED
+```
+
+O cancelamento não remove o registro do banco. A transação permanece disponível para histórico, mas deixa de participar dos cálculos dos relatórios.
+
+## Paginação
+
+A listagem de transações retorna uma resposta simplificada:
+
+```json
+{
+  "content": [],
+  "page": 0,
+  "size": 15,
+  "totalElements": 0,
+  "totalPages": 0
+}
+```
+
+Isso evita expor diretamente toda a estrutura interna de paginação do Spring Data.
+
+## Filtros
+
+A listagem de transações aceita filtros como:
+
+- `categoryId`
+- `transactionType`
+- `initialDate`
+- `finalDate`
+- `initialDueDate`
+- `finalDueDate`
+
+Exemplo:
+
+```http
+GET /transactions?page=0&categoryId=1&transactionType=EXPENSE
+```
+
+Todos os filtros são aplicados considerando o usuário autenticado.
+
+## Relatórios financeiros
+
+O endpoint de relatório recebe um intervalo de datas:
+
+```http
+GET /transactions/report?initialDate=2026-08-01T00:00:00&finalDate=2026-08-27T23:59:59
+```
+
+O relatório calcula:
+
+- total de receitas;
+- total de despesas;
+- saldo inicial;
+- saldo final;
+- quantidade de transações;
+- valores agrupados por categoria.
+
+Somente transações com status `COMPLETED` entram nos cálculos.
+
+O intervalo máximo permitido é de **90 dias**.
+
+Após a geração do relatório, o Transaction Service solicita ao Notification Service o envio do resultado por email.
+
+## Categorias
+
+Cada categoria pertence ao usuário que a criou.
+
+O banco impede categorias duplicadas para o mesmo usuário de forma case-insensitive. Assim, nomes como:
+
+```text
+Alimentação
+alimentação
+ALIMENTAÇÃO
+```
+
+são considerados equivalentes para o mesmo usuário.
+
+## Rate Limiting
+
+A API utiliza **Bucket4j** para controlar a quantidade de requisições realizadas nos endpoints.
+
+O **Hazelcast** é utilizado como armazenamento compartilhável do estado do Rate Limiting, permitindo que diferentes instâncias da aplicação possam compartilhar os mesmos contadores em um cenário de escalabilidade horizontal.
+
+## Banco de dados e Flyway
+
+O PostgreSQL é utilizado como banco principal e o schema é versionado através do Flyway.
+
+Novas mudanças estruturais são adicionadas através de novas migrations, evitando alterações manuais no banco.
+
+Além das constraints de integridade, a tabela de transações possui índices voltados aos principais padrões de consulta, como:
+
+```text
+(USER_ID, DATE)
+(USER_ID, CATEGORY_ID)
+(USER_ID, DUE_DATE)
+(USER_ID, TRANSACTION_STATUS, DATE)
+```
+
+## Swagger / OpenAPI
+
+Com a aplicação em execução:
 
 ```text
 http://localhost:8084/swagger-ui.html
 ```
 
-Através do Swagger é possível visualizar os endpoints disponíveis, contratos da API e realizar requisições diretamente pela interface.
+A interface permite visualizar endpoints, contratos de request/response e testar as requisições.
 
-## Endpoints Principais
+## Postman Collection
 
-| Método | Endpoint                 | Descrição                                     |
-| ------ |--------------------------|-----------------------------------------------|
-| POST   | `/auth`                  | Registra um novo usuário                      |
-| POST   | `/auth/login`            | Autentica o usuário                           |
-| POST   | `/auth/refresh-token`    | Gera um novo Access Token                     |
-| POST   | `/transactions/category` | Cria uma categoria                            |
-| GET    | `/transactions/category` | Lista as categorias do usuário                |
-| POST   | `/transactions`          | Registra uma nova transação                   |
-| GET    | `/transactions`          | Lista transações utilizando filtros           |
-| GET    | `/transactions/report`   | Gera um relatório financeiro e envia no email |
-| ------ |--------------------------|-----------------------------------------------|                                                                
+Uma collection pronta para testar e demonstrar a API está disponível em:
 
-A documentação completa dos endpoints, parâmetros, DTOs e respostas está disponível através do Swagger.
+[postman/transaction-service.postman_collection.json](postman/transaction-service.postman_collection.json)
 
-## Fluxo de Demonstração
+### Importando no Postman
 
-1. Subir o ambiente com Docker Compose.
-2. Aguardar a inicialização da aplicação e execução das migrations pelo Flyway.
-3. Registrar um usuário através de `/auth`.
-4. Realizar login através de `/auth/login`.
-5. Copiar o Access Token retornado.
-6. Autorizar as requisições utilizando o JWT.
-7. Criar categorias de receitas e despesas.
-8. Registrar transações.
-9. Consultar as transações utilizando filtros.
-10. Gerar um relatório financeiro.
-11. Solicitar o envio do relatório por email.
-12. Abrir o Mailpit.
-13. Conferir o email enviado pelo serviço de notificação.
+1. Abra o Postman.
+2. Clique em **Import**.
+3. Selecione `postman/transaction-service.postman_collection.json`.
+4. Confirme que a variável `baseUrl` está definida como `http://localhost:8084`.
+5. Execute as requisições na ordem sugerida abaixo.
 
-## Decisões Técnicas
+### Fluxo sugerido
 
-### JWT
+```text
+Register
+   ↓
+Login
+   ↓
+Create Category
+   ↓
+Create Transaction
+   ↓
+List Transactions
+   ↓
+Cancel Transaction
+   ↓
+Generate Report
+```
 
-JWT foi utilizado para implementar autenticação stateless, evitando a necessidade de manter uma sessão tradicional no servidor para cada usuário autenticado.
+A collection utiliza variáveis para evitar copiar valores manualmente:
 
-### Refresh Token
+| Variável | Função |
+|---|---|
+| `baseUrl` | URL base da API |
+| `accessToken` | JWT utilizado nos endpoints protegidos |
+| `refreshToken` | Token utilizado para renovar a autenticação |
+| `categoryId` | ID da categoria utilizada nos testes |
+| `transactionId` | ID utilizado no cancelamento |
+| `page` | Página utilizada na listagem |
 
-O Refresh Token permite gerar um novo Access Token sem exigir que o usuário realize novamente o processo de login após a expiração do token de acesso.
+Ao executar **Login**, a collection salva automaticamente `accessToken` e `refreshToken`.
+
+Ao executar **Create Category**, a collection salva automaticamente o ID retornado em `categoryId`.
+
+> Atualmente o `TransactionResponseDto` não retorna o ID da transação. Por isso, para testar `Cancel Transaction`, informe manualmente a variável `transactionId` na collection.
+
+## Endpoints principais
+
+### Autenticação
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| POST | `/auth` | Registra um novo usuário |
+| POST | `/auth/login` | Autentica o usuário |
+| POST | `/auth/refresh-token` | Gera um novo Access Token |
+
+### Usuário
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/user` | Retorna os dados do usuário autenticado |
+
+### Categorias
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| POST | `/transactions/category` | Cria uma categoria |
+| GET | `/transactions/category` | Lista as categorias do usuário |
+| PUT | `/transactions/category/{id}` | Atualiza uma categoria |
+| DELETE | `/transactions/category/{id}` | Remove uma categoria |
+
+### Transações
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| POST | `/transactions` | Registra uma nova transação |
+| GET | `/transactions?page={page}` | Lista transações com filtros e paginação |
+| PATCH | `/transactions/{id}/cancel` | Cancela uma transação |
+
+### Relatórios
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/transactions/report` | Gera um relatório financeiro e solicita seu envio por email |
+
+## Testes
+
+Para executar os testes:
+
+```bash
+./gradlew test
+```
+
+Para executar o build completo:
+
+```bash
+./gradlew clean build
+```
+
+O projeto possui testes para regras de autenticação, usuários, categorias, transações, relatórios, controllers e mappers.
+
+## Integração contínua
+
+O projeto utiliza GitHub Actions para validar alterações automaticamente.
+
+Fluxo:
+
+```text
+Push / Pull Request
+        ↓
+Checkout
+        ↓
+Java 17
+        ↓
+Gradle
+        ↓
+Build + Tests
+        ↓
+Success / Failure
+```
+
+## Decisões técnicas
+
+### JWT e Refresh Token
+
+JWT permite autenticação stateless. O Refresh Token permite utilizar Access Tokens de menor duração sem exigir um novo login sempre que o token expirar.
 
 ### PostgreSQL
 
-PostgreSQL foi escolhido como banco de dados principal por ser um banco relacional adequado para representar usuários, categorias e transações financeiras, além de oferecer mecanismos de integridade e consistência dos dados.
+Foi escolhido por se adequar à natureza relacional dos dados financeiros e oferecer transações, constraints e índices.
 
 ### Flyway
 
-Flyway foi utilizado para versionar e automatizar as migrações do banco de dados.
-
-As alterações na estrutura do PostgreSQL são mantidas em arquivos de migration versionados junto ao código-fonte, permitindo que diferentes ambientes sejam inicializados e atualizados de forma consistente.
-
-Ao iniciar a aplicação, o Flyway identifica quais migrations ainda não foram executadas e aplica apenas as versões pendentes, mantendo um histórico das alterações realizadas no schema.
-
-Essa abordagem evita depender de alterações manuais no banco e mantém a evolução da estrutura de dados rastreável junto ao histórico do projeto.
-
-### OpenFeign
-
-OpenFeign foi utilizado para abstrair a comunicação HTTP entre o **Transaction Service** e o **Transaction Notification Service**.
-
-Dessa forma, o serviço financeiro pode solicitar o envio de notificações sem assumir diretamente a responsabilidade pelo envio de emails.
-
-### Bucket4j
-
-Bucket4j foi utilizado para implementar **Rate Limiting** nos endpoints da API.
-
-A solução permite controlar a quantidade de requisições realizadas dentro de determinado intervalo de tempo, ajudando a proteger a aplicação contra abuso e excesso de chamadas.
-
-### Hazelcast
-
-O Hazelcast não é uma dependência obrigatória para o cenário atual do projeto, já que o Transaction Service pode ser executado em uma única instância e manter o estado do Rate Limiting em memória.
-
-Mesmo assim, ele foi integrado ao Bucket4j para aplicar um modelo mais preparado para **escalabilidade horizontal**.
-
-Caso múltiplas instâncias do Transaction Service sejam executadas, o Hazelcast permite compartilhar o estado dos limites de requisição entre elas, evitando que cada instância mantenha um contador independente.
-
-A implementação foi utilizada também como forma de aplicar conceitos relacionados a estado compartilhado e sistemas distribuídos.
+Mantém as alterações do schema versionadas junto ao código e reproduzíveis entre ambientes.
 
 ### MapStruct
 
-MapStruct foi utilizado para realizar o mapeamento entre entidades e DTOs através de código gerado em tempo de compilação, reduzindo código repetitivo e mantendo a separação entre persistência e contratos da API.
+Reduz código repetitivo no mapeamento entre entidades e DTOs utilizando código gerado em tempo de compilação.
 
-### Mailpit
+### OpenFeign
 
-Mailpit foi utilizado no ambiente de desenvolvimento para capturar emails enviados pela aplicação.
+Abstrai a comunicação HTTP entre o Transaction Service e o Notification Service.
 
-Isso permite testar todo o fluxo de notificações localmente sem utilizar credenciais reais ou enviar emails para endereços externos.
+### Cancelamento lógico
 
-### Docker Compose
+Transações canceladas permanecem armazenadas para preservar o histórico, mas deixam de participar dos relatórios.
 
-Docker Compose foi utilizado para criar um ambiente local reproduzível, permitindo subir os serviços e dependências necessários através de um único comando.
+### Paginação
 
-### GitHub Actions
+Evita carregar todas as transações de um usuário em uma única requisição e fornece apenas os metadados necessários para navegação.
 
-GitHub Actions é utilizado para automatizar verificações do projeto através de um pipeline de integração contínua.
+## Objetivo do projeto
 
-## Estrutura Geral
+O objetivo é aplicar conceitos utilizados no desenvolvimento de aplicações back-end com Java e Spring Boot, incluindo:
 
-```text
-Client
-  │
-  ▼
-Transaction Service
-  │
-  ├── Authentication
-  ├── Categories
-  ├── Transactions
-  ├── Reports
-  ├── Rate Limiting
-  │     ├── Bucket4j
-  │     └── Hazelcast
-  │
-  ├── Flyway
-  │     └── PostgreSQL
-  │
-  └── OpenFeign
-        │
-        ▼
-Transaction Notification Service
-        │
-        ▼
-      Mailpit
-```
-
-## Ambiente Local
-
-| Serviço / Componente             | Função                                            |
-| -------------------------------- | ------------------------------------------------- |
-| Transaction Service              | API principal                                     |
-| Transaction Notification Service | Processamento e envio de notificações             |
-| PostgreSQL                       | Persistência dos dados                            |
-| Flyway                           | Versionamento e execução das migrations           |
-| Mailpit                          | Captura de emails em desenvolvimento              |
-| Hazelcast                        | Estado compartilhado utilizado pelo Rate Limiting |
-
-## Segurança
-
-O projeto aplica algumas medidas voltadas à segurança da API:
-
-* Autenticação com JWT
-* Refresh Token
-* Proteção de endpoints com Spring Security
-* Rate Limiting com Bucket4j
-* Suporte a Rate Limiting distribuído com Hazelcast
-* Configurações sensíveis através de variáveis de ambiente
-* Separação entre o serviço financeiro e o serviço responsável por notificações
-
-## Objetivo do Projeto
-
-O objetivo deste projeto é aplicar conceitos utilizados no desenvolvimento de APIs back-end com Spring Boot, incluindo:
-
-* autenticação e autorização;
-* modelagem e persistência de dados;
-* versionamento e migração de banco de dados com Flyway;
-* comunicação entre serviços;
-* segurança de APIs;
-* Rate Limiting;
-* conceitos de estado compartilhado e escalabilidade horizontal;
-* utilização de DTOs e mapeamento;
-* geração de relatórios;
-* envio de notificações;
-* containerização;
-* documentação de APIs;
-* integração contínua.
+- APIs REST;
+- autenticação e autorização;
+- regras de negócio;
+- modelagem relacional;
+- Spring Data JPA;
+- PostgreSQL;
+- Flyway;
+- índices;
+- DTOs;
+- MapStruct;
+- Bean Validation;
+- tratamento de exceções;
+- paginação;
+- testes automatizados;
+- comunicação entre serviços;
+- tarefas agendadas;
+- relatórios;
+- notificações;
+- Rate Limiting;
+- Docker;
+- documentação de APIs;
+- integração contínua.
