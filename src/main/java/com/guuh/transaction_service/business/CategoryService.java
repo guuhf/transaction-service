@@ -40,8 +40,6 @@ public class CategoryService {
 
     public CategoryResponseDto updateCategory(CategoryRequestDto dto, Long id){
         Long userId =  userService.getLoggedUser().getId();
-
-        validateCategoryUniqueness(dto.name());
         Category category = categoryRepository.findByIdAndUserId(
                 id, userId).orElseThrow(()->
                 new CategoryNotFoundException("Categoria não encontrada!"));

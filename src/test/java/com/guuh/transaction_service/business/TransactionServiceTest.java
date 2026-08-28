@@ -217,7 +217,7 @@ public class TransactionServiceTest {
         when(mapper.toTransactionDto(transaction)).thenReturn(response);
 
         TransactionResponseDto actual = transactionService.cancelTransaction(1L);
-        assertEquals(TransactionStatus.COMPLETED, actual.transactionStatus());
+        assertEquals(TransactionStatus.CANCELED, actual.transactionStatus());
     }
 
     @Test
