@@ -211,7 +211,8 @@ public class TransactionServiceTest {
 
     @Test
     void shouldCancelTransactionSucessfully(){
-        when(transactionRepository.findTransactionById(1L)).thenReturn(Optional.of(transaction));
+        when(userService.getLoggedUser()).thenReturn(user);
+        when(transactionRepository.findByIdAndUserId(1L, user.getId())).thenReturn(Optional.of(transaction));
         when(transactionRepository.save(transaction)).thenReturn(transaction);
         when(mapper.toTransactionDto(transaction)).thenReturn(response);
 

@@ -44,7 +44,7 @@ public class TransactionService {
     }
 
     public TransactionResponseDto cancelTransaction(Long id){
-        Transaction transaction = transactionRepository.findTransactionById(id)
+        Transaction transaction = transactionRepository.findByIdAndUserId(id, userService.getLoggedUser().getId())
                 .orElseThrow(()-> new TransactionNotFoundException("Transação não encontrada!"));
         checkStatus(transaction.getTransactionStatus());
         transaction.setTransactionStatus(TransactionStatus.CANCELED);

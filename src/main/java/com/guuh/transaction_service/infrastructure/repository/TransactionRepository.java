@@ -41,5 +41,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                                                                      LocalDateTime finalDate,
                                                                      TransactionStatus status);
 
-    Optional<Transaction> findTransactionById(Long id);
+    Optional<Transaction> findByIdAndUserId(Long id, Long userId);
 }
