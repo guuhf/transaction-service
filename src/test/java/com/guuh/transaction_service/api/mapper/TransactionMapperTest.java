@@ -57,6 +57,7 @@ public class TransactionMapperTest {
                 .build();
 
         transaction1 = Transaction.builder()
+                .id(1L)
                 .transactionType(TransactionType.INCOME)
                 .transactionStatus(TransactionStatus.COMPLETED)
                 .description("teste")
@@ -67,6 +68,7 @@ public class TransactionMapperTest {
                 .build();
 
         transaction2 = Transaction.builder()
+                .id(2L)
                 .transactionType(TransactionType.EXPENSE)
                 .transactionStatus(TransactionStatus.COMPLETED)
                 .description("teste")
@@ -77,6 +79,7 @@ public class TransactionMapperTest {
                 .build();
 
         response = new TransactionResponseDto(
+                1L,
                 TransactionType.INCOME,
                 TransactionStatus.COMPLETED,
                 "teste",
@@ -98,6 +101,7 @@ public class TransactionMapperTest {
         list = List.of(transaction1, transaction2);
         dtoList = List.of(
                 new TransactionResponseDto(
+                        1L,
                         TransactionType.INCOME,
                         TransactionStatus.COMPLETED,
                         "teste",
@@ -109,6 +113,7 @@ public class TransactionMapperTest {
                 ),
 
                 new TransactionResponseDto(
+                        2L,
                         TransactionType.EXPENSE,
                         TransactionStatus.COMPLETED,
                         "teste",

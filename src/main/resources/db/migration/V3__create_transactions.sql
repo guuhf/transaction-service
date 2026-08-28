@@ -4,7 +4,6 @@ CREATE TABLE transactions
     CATEGORY_ID        BIGINT       not null,
     USER_ID            BIGINT       not null,
     TRANSACTION_TYPE   VARCHAR(100) not null,
-    TRANSACTION_STATUS VARCHAR(100) not null,
     DESCRIPTION        VARCHAR(150) not null,
     AMOUNT             DECIMAL      not null,
     DATE               TIMESTAMP,
@@ -19,7 +18,7 @@ CREATE TABLE transactions
             REFERENCES users (id),
 
     CONSTRAINT ck_amount_positive
-        CHECK (AMOUNT >= 0),
+        CHECK (AMOUNT > 0),
 
     CONSTRAINT ck_due_date_after_date
         CHECK ( DUE_DATE > DATE
