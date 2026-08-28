@@ -108,6 +108,7 @@ public class TransactionServiceTest {
         );
 
         response = TransactionResponseDtoFixture.build(
+                1L,
                 TransactionType.INCOME,
                 TransactionStatus.COMPLETED,
                 "Pagamento",
@@ -119,6 +120,7 @@ public class TransactionServiceTest {
         );
 
         canceledResponse = TransactionResponseDtoFixture.build(
+                1L,
                 TransactionType.INCOME,
                 TransactionStatus.CANCELED,
                 "Pagamento",

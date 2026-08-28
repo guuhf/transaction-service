@@ -70,6 +70,7 @@ public class TransactionControllerTest {
         );
 
         response = TransactionResponseDtoFixture.build(
+                1L,
                 TransactionType.INCOME,
                 TransactionStatus.COMPLETED,
                 "Pagamento",
@@ -110,6 +111,7 @@ public class TransactionControllerTest {
                         .content(requestJson))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(response.id()))
                 .andExpect(jsonPath("$.transactionType").value(response.transactionType().toString()))
                 .andExpect(jsonPath("$.description").value(response.description()))
                 .andExpect(jsonPath("$.amount").value(response.amount().doubleValue()))
@@ -181,6 +183,7 @@ public class TransactionControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content[0].id").value(response.id()))
                 .andExpect(jsonPath("$.content[0].transactionType").value(response.transactionType().toString()))
                 .andExpect(jsonPath("$.content[0].description").value(response.description()))
                 .andExpect(jsonPath("$.content[0].amount").value(response.amount().doubleValue()))
@@ -206,6 +209,7 @@ public class TransactionControllerTest {
 
         mockMvc.perform(patch("/transactions/1/cancel"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(response.id()))
                 .andExpect(jsonPath("$.transactionType").value(response.transactionType().toString()))
                 .andExpect(jsonPath("$.transactionStatus").value(response.transactionStatus().toString()))
                 .andExpect(jsonPath("$.description").value(response.description()))
