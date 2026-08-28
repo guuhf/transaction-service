@@ -42,7 +42,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
     private static final String BEARER_PREFIX = "Bearer ";
 
     public UserResponseDto userRegister(RegisterRequestDto dto) {
