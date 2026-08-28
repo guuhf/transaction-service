@@ -95,7 +95,7 @@ public class ReportControllerTest {
     }
 
     @Test
-    void shouldGenerateReportReturnConflictWhenThrowException() throws Exception {
+    void shouldGenerateReportReturnBadRequestWhenThrowException() throws Exception {
         when(reportService.generateReport(initialDate, finalDate))
                 .thenThrow(new InvalidDatesException("O intervalo entre datas nao pode ser maior que 90 dias"));
 
@@ -103,7 +103,7 @@ public class ReportControllerTest {
                         .param("initialDate", initialDate.toString())
                         .param("finalDate", finalDate.toString())
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict());
+                .andExpect(status().isBadRequest());
 
         verify(reportService).generateReport(initialDate, finalDate);
     }
