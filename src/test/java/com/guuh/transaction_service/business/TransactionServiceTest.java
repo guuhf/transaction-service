@@ -27,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -62,6 +61,8 @@ public class TransactionServiceTest {
     private TransactionRequestDto request;
     @Mock
     private TransactionResponseDto response;
+    @Mock
+    private TransactionResponseDto canceledResponse;
     @Mock
     private FilterRequestDto filterRequest;
     @Mock
@@ -109,6 +110,17 @@ public class TransactionServiceTest {
         response = TransactionResponseDtoFixture.build(
                 TransactionType.INCOME,
                 TransactionStatus.COMPLETED,
+                "Pagamento",
+                new BigDecimal("2500.00"),
+                date,
+                dueDate,
+                1L,
+                "Salario"
+        );
+
+        canceledResponse = TransactionResponseDtoFixture.build(
+                TransactionType.INCOME,
+                TransactionStatus.CANCELED,
                 "Pagamento",
                 new BigDecimal("2500.00"),
                 date,
@@ -211,12 +223,13 @@ public class TransactionServiceTest {
 
     @Test
     void shouldCancelTransactionSucessfully(){
-        when(transactionRepository.findTransactionById(1L)).thenReturn(Optional.of(transaction));
+        when(userService.getLoggedUser()).thenReturn(user);
+        when(transactionRepository.findByIdAndUserId(1L, user.getId())).thenReturn(Optional.of(transaction));
         when(transactionRepository.save(transaction)).thenReturn(transaction);
-        when(mapper.toTransactionDto(transaction)).thenReturn(response);
+        when(mapper.toTransactionDto(transaction)).thenReturn(canceledResponse);
 
         TransactionResponseDto actual = transactionService.cancelTransaction(1L);
-        assertEquals(TransactionStatus.COMPLETED, actual.transactionStatus());
+        assertEquals(TransactionStatus.CANCELED, actual.transactionStatus());
     }
 
     @Test
